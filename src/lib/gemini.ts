@@ -11,13 +11,22 @@ export async function generateAIReport(
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    // Organize entries by column
+    // Organize entries by column and filter out gibberish
     const organizedEntries = {
-      love: entries.filter(e => e.column === 'love').map(e => e.text),
-      goodAt: entries.filter(e => e.column === 'goodAt').map(e => e.text),
-      earn: entries.filter(e => e.column === 'earn').map(e => e.text),
-      needs: entries.filter(e => e.column === 'needs').map(e => e.text),
+      love: entries.filter(e => e.column === 'love').map(e => e.text).filter(text => text.trim().length > 2),
+      goodAt: entries.filter(e => e.column === 'goodAt').map(e => e.text).filter(text => text.trim().length > 2),
+      earn: entries.filter(e => e.column === 'earn').map(e => e.text).filter(text => text.trim().length > 2),
+      needs: entries.filter(e => e.column === 'needs').map(e => e.text).filter(text => text.trim().length > 2),
     };
+
+    // If no meaningful entries, use default values
+    const hasContent = Object.values(organizedEntries).some(arr => arr.length > 0);
+    if (!hasContent) {
+      organizedEntries.love = ['creative activities', 'helping others', 'learning new things'];
+      organizedEntries.goodAt = ['problem solving', 'communication', 'organization'];
+      organizedEntries.earn = ['consulting', 'teaching', 'freelancing'];
+      organizedEntries.needs = ['environmental solutions', 'education', 'healthcare'];
+    }
 
     const prompt = `
 You are an AI career counselor specializing in Ikigai analysis. Based on the user's Ikigai board entries and quiz responses, generate a comprehensive career guidance report.

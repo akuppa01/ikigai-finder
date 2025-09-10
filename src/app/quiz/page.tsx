@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Home } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -306,12 +306,12 @@ export default function QuizPage() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-12">
+          <div className="flex items-center justify-between mt-6">
             <Button
               variant="outline"
               onClick={handlePrevious}
               disabled={currentQuestion === 0}
-              className="gap-2"
+              className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold"
             >
               <ArrowLeft className="h-4 w-4" />
               Previous
@@ -320,7 +320,7 @@ export default function QuizPage() {
             <Button
               onClick={handleNext}
               disabled={!canProceed}
-              className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
             >
               {isLastQuestion ? 'Complete' : 'Next'}
               <ArrowRight className="h-4 w-4" />
@@ -382,10 +382,11 @@ export default function QuizPage() {
               >
                 Cancel
               </Button>
+            <div className="flex flex-col gap-3">
               <Button
                 onClick={handleGenerateReport}
                 disabled={isGenerating || !email.trim()}
-                className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200"
+                className="w-full h-12 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 transition-all duration-200 text-white font-semibold shadow-lg"
               >
                 {isGenerating ? (
                   <div className="flex items-center gap-2">
@@ -396,6 +397,17 @@ export default function QuizPage() {
                   'Generate Report'
                 )}
               </Button>
+              
+              <Link href="/">
+                <Button
+                  variant="outline"
+                  className="w-full h-10 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
             </div>
           </div>
         </DialogContent>

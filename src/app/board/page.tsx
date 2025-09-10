@@ -159,8 +159,8 @@ export default function BoardPage() {
 
       {/* Board */}
       <div className="relative z-10 px-6 pb-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="h-[500px] min-h-[400px]">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="h-[600px] min-h-[500px]">
             <Board />
           </div>
         </div>

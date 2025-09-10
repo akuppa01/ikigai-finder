@@ -114,10 +114,10 @@ export default function EntryCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group relative bg-white rounded-lg shadow-sm border border-gray-200/50 transition-all duration-300',
-        isSelected && 'ring-1 ring-blue-400 ring-offset-1',
-        isDragging && 'opacity-60 scale-105',
-        'hover:shadow-md hover:border-gray-300'
+        'group relative bg-white rounded-xl shadow-md border-2 border-gray-200/60 transition-all duration-300',
+        isSelected && 'ring-2 ring-blue-500 ring-offset-2 shadow-lg',
+        isDragging && 'opacity-70 scale-110 shadow-2xl',
+        'hover:shadow-lg hover:border-gray-300 hover:scale-[1.02]'
       )}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -150,7 +150,7 @@ export default function EntryCard({
       </button>
 
       {/* Content */}
-      <div className="p-2 pr-8 pl-8 min-h-[50px] flex items-center">
+      <div className="p-3 pr-10 pl-10 min-h-[60px] flex items-center">
         {isEditing ? (
           <textarea
             ref={inputRef}
@@ -158,12 +158,12 @@ export default function EntryCard({
             onChange={e => setLocalText(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
-            className="w-full resize-none border-none outline-none text-xs bg-transparent"
+            className="w-full resize-none border-none outline-none text-sm bg-transparent font-medium"
             placeholder="Enter your text..."
             rows={2}
           />
         ) : (
-          <div className="w-full text-xs text-gray-600 whitespace-pre-wrap">
+          <div className="w-full text-sm text-gray-700 whitespace-pre-wrap font-medium">
             {entry.text || (
               <span className="text-gray-400 italic">Click to edit...</span>
             )}

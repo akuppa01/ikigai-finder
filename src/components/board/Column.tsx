@@ -100,24 +100,24 @@ export default function Column({
     <motion.div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col h-full min-h-[400px] bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300',
-        isOver && 'border-blue-300 bg-blue-50/30 shadow-lg',
-        'hover:shadow-md hover:border-gray-300'
+        'flex flex-col h-full min-h-[500px] bg-white/95 backdrop-blur-sm rounded-2xl border-2 border-gray-200/60 transition-all duration-300 shadow-lg',
+        isOver && 'border-blue-400 bg-blue-50/40 shadow-2xl scale-[1.02]',
+        'hover:shadow-xl hover:border-gray-300 hover:scale-[1.01]'
       )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       {/* Header */}
-      <div className="p-3 border-b border-gray-100">
+      <div className="p-4 border-b-2 border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold" style={{ color }}>
+            <h3 className="text-lg font-bold" style={{ color }}>
               {config.title}
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5">{config.description}</p>
+            <p className="text-sm text-gray-600 mt-1 font-medium">{config.description}</p>
           </div>
-          <div className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+          <div className="text-sm font-semibold text-white px-3 py-1 rounded-full shadow-md" style={{ backgroundColor: color }}>
             {entries.length}/25
           </div>
         </div>

@@ -216,7 +216,7 @@ export default function Board() {
     >
       <div className="h-full">
         {/* Desktop Grid */}
-        <div className="hidden lg:grid lg:grid-cols-4 gap-6 h-full">
+        <div className="hidden lg:grid lg:grid-cols-4 gap-8 h-full">
           {(Object.keys(columnConfig) as ColumnKey[]).map(columnKey => {
             const config = columnConfig[columnKey];
             const columnEntries = columns[columnKey];
