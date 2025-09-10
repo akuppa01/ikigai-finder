@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
+import { Home } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NinjaStar from '@/components/NinjaStar';
@@ -300,7 +301,7 @@ export default function ReportPage() {
 
         {/* Home Button - Top Left */}
         <div className="relative z-10 p-6">
-          <Link href="/">
+          <a href="/">
             <Button
               variant="ghost"
               className="gap-2 text-gray-600 hover:text-gray-900"
@@ -308,7 +309,7 @@ export default function ReportPage() {
               <Home className="h-4 w-4" />
               Back to Home
             </Button>
-          </Link>
+          </a>
         </div>
 
         <div className="relative z-10 flex items-center justify-center min-h-screen -mt-20">
@@ -328,7 +329,7 @@ export default function ReportPage() {
 
         {/* Home Button - Top Left */}
         <div className="relative z-10 p-6">
-          <Link href="/">
+          <a href="/">
             <Button
               variant="ghost"
               className="gap-2 text-gray-600 hover:text-gray-900"
@@ -336,7 +337,7 @@ export default function ReportPage() {
               <Home className="h-4 w-4" />
               Back to Home
             </Button>
-          </Link>
+          </a>
         </div>
 
         <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
@@ -362,9 +363,9 @@ export default function ReportPage() {
             <p className="text-gray-600 mb-6">
               {error || 'The requested report could not be found.'}
             </p>
-            <Link href="/">
+            <a href="/">
               <Button>Back to Home</Button>
-            </Link>
+            </a>
           </Card>
         </div>
       </div>
