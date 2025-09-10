@@ -33,6 +33,9 @@ export async function generateAIReport(
       organizedEntries.needs = ['environmental solutions', 'education', 'healthcare'];
     }
 
+    console.log('Organized entries:', organizedEntries);
+    console.log('Quiz responses:', quiz);
+
     const prompt = `
 You are an AI career counselor specializing in Ikigai analysis. Based on the user's Ikigai board entries and quiz responses, generate a comprehensive career guidance report.
 
@@ -88,9 +91,12 @@ Please generate a JSON response with the following structure:
 Generate 3-4 items for each category. Be specific, actionable, and personalized based on their responses.
 `;
 
+    console.log('Sending prompt to Gemini...');
     const result = await model.generateContent(prompt);
+    console.log('Gemini response received');
     const response = await result.response;
     const text = response.text();
+    console.log('Response text extracted');
 
     console.log('Gemini response:', text);
 
@@ -126,6 +132,11 @@ Generate 3-4 items for each category. Be specific, actionable, and personalized 
     return reportData;
   } catch (error) {
     console.error('Gemini API error:', error);
-    throw new Error('Failed to generate AI report');
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    throw new Error(`Failed to generate AI report: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
