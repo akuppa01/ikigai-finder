@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { Home } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import NinjaStar from '@/components/NinjaStar';
 import BackgroundBlobs from '@/components/BackgroundBlobs';
 import ReportHeader from '@/components/report/ReportHeader';
@@ -177,8 +178,13 @@ export default function ReportPage() {
       currentY = 80;
 
       // Report metadata
-      addText(`Confidence Level: ${report.confidence}`, 12, true, '#68A357'); // Sage green
-      addText(`Tone: ${report.tone}`, 12, true, '#8B7355'); // Earth brown
+      addText(
+        `Confidence Level: ${report.confidence || 'N/A'}`,
+        12,
+        true,
+        '#68A357'
+      ); // Sage green
+      addText(`Tone: ${report.tone || 'N/A'}`, 12, true, '#8B7355'); // Earth brown
       currentY += 10;
 
       // Career Constellation Section
@@ -189,7 +195,7 @@ export default function ReportPage() {
       );
       currentY += 5;
 
-      report.careers.forEach((career, index) => {
+      (report.careers || []).forEach((career, index) => {
         const personalizedDescription = generatePersonalizedExplanation(
           career,
           sampleUserProfile,
@@ -211,7 +217,7 @@ export default function ReportPage() {
       );
       currentY += 5;
 
-      report.majors.forEach((major, index) => {
+      (report.majors || []).forEach((major, index) => {
         const personalizedDescription = generatePersonalizedExplanation(
           major,
           sampleUserProfile,
@@ -237,7 +243,7 @@ export default function ReportPage() {
         );
         currentY += 5;
 
-        report.entrepreneurialIdeas.forEach((idea, index) => {
+        (report.entrepreneurialIdeas || []).forEach((idea, index) => {
           const personalizedDescription = generatePersonalizedExplanation(
             idea,
             sampleUserProfile,
@@ -260,7 +266,7 @@ export default function ReportPage() {
       );
       currentY += 5;
 
-      report.nextSteps.forEach((step, index) => {
+      (report.nextSteps || []).forEach((step, index) => {
         addCard(
           `Step ${index + 1}`,
           step,
@@ -398,14 +404,14 @@ export default function ReportPage() {
                 className="gap-2 bg-gradient-to-r from-sage-100 to-moss-100 text-sage-800 px-4 py-2 text-sm font-semibold"
               >
                 <span className="text-sage-600">Confidence:</span>
-                <span className="font-bold">{report.confidence}</span>
+                <span className="font-bold">{report.confidence || 'N/A'}</span>
               </Badge>
               <Badge
                 variant="outline"
                 className="border-2 border-earth-300 text-earth-700 bg-earth-50 px-4 py-2 text-sm font-semibold"
               >
                 <span className="text-earth-600">Tone:</span>
-                <span className="font-bold">{report.tone}</span>
+                <span className="font-bold">{report.tone || 'N/A'}</span>
               </Badge>
             </div>
           </Card>
@@ -429,7 +435,7 @@ export default function ReportPage() {
               />
             </motion.div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {report.careers.map((career, index) => (
+              {(report.careers || []).map((career, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -476,7 +482,7 @@ export default function ReportPage() {
               />
             </motion.div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {report.majors.map((major, index) => (
+              {(report.majors || []).map((major, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -525,7 +531,7 @@ export default function ReportPage() {
                   />
                 </motion.div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {report.entrepreneurialIdeas.map((idea, index) => (
+                  {(report.entrepreneurialIdeas || []).map((idea, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 20 }}
@@ -568,7 +574,7 @@ export default function ReportPage() {
                 subtitle="'A journey of a thousand miles begins with a single step.' These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you'll be walking the path of your dreams."
               />
             </motion.div>
-            <ActionPlan steps={report.nextSteps} />
+            <ActionPlan steps={report.nextSteps || []} />
           </section>
 
           {/* Targeted Ads Section - COMMENTED OUT */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import { CheckCircle } from 'lucide-react';
 
 interface ActionPlanProps {
   steps: string[];
