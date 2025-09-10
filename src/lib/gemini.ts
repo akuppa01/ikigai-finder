@@ -20,7 +20,7 @@ export async function generateAIReport(
       keyPrefix: process.env.GOOGLE_AI_API_KEY.substring(0, 10) + '...'
     });
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     // Organize entries by column and filter out gibberish
     const organizedEntries = {
