@@ -2,21 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, ArrowLeft, Star, Home } from 'lucide-react';
-import LoadingSpinner from '@/components/ui/loading-spinner';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NinjaStar from '@/components/NinjaStar';
-import CareerCard from '@/components/report/CareerCard';
-import MajorCard from '@/components/report/MajorCard';
-import EntrepreneurCard from '@/components/report/EntrepreneurCard';
 import BackgroundBlobs from '@/components/BackgroundBlobs';
-// import TargetedAds from '@/components/ads/TargetedAds';
-// import PremiumFeatures from '@/components/premium/PremiumFeatures';
+import ReportHeader from '@/components/report/ReportHeader';
+import ReportCard from '@/components/report/ReportCard';
+import SectionHeader from '@/components/report/SectionHeader';
+import ActionPlan from '@/components/report/ActionPlan';
 import { AIReport } from '@/lib/openai';
+import {
+  generatePersonalizedExplanation,
+  sampleUserProfile,
+} from '@/lib/personalization';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -181,7 +180,7 @@ export default function ReportPage() {
       addText(`Tone: ${report.tone}`, 12, true, '#8B7355'); // Earth brown
       currentY += 10;
 
-      // Career Paths Section
+      // Career Constellation Section
       addSectionHeader('Your Career Constellation', '🌟');
       addText(
         'Like Master Oogway once said, "Yesterday is history, tomorrow is a mystery, but today is a gift." These career paths align with your unique Ikigai - the intersection of what you love, what you\'re good at, what you can be paid for, and what the world needs.',
@@ -190,14 +189,20 @@ export default function ReportPage() {
       currentY += 5;
 
       report.careers.forEach((career, index) => {
+        const personalizedDescription = generatePersonalizedExplanation(
+          career,
+          sampleUserProfile,
+          'career'
+        );
+
         addCard(
           `${index + 1}. ${career.title}`,
-          career.description,
+          personalizedDescription,
           '#68A357' // Sage green
         );
       });
 
-      // Majors Section
+      // Learning Journey Section
       addSectionHeader('Your Learning Journey', '📚');
       addText(
         '"The journey of a thousand miles begins with a single step." These fields of study will help you develop the skills and knowledge needed to thrive in your chosen path. Each major is a stepping stone toward your Ikigai.',
@@ -206,14 +211,20 @@ export default function ReportPage() {
       currentY += 5;
 
       report.majors.forEach((major, index) => {
+        const personalizedDescription = generatePersonalizedExplanation(
+          major,
+          sampleUserProfile,
+          'major'
+        );
+
         addCard(
           `${index + 1}. ${major.title}`,
-          major.description,
+          personalizedDescription,
           '#5B7A34' // Moss green
         );
       });
 
-      // Entrepreneurial Ideas Section
+      // Innovation Garden Section
       if (
         report.entrepreneurialIdeas &&
         report.entrepreneurialIdeas.length > 0
@@ -226,15 +237,21 @@ export default function ReportPage() {
         currentY += 5;
 
         report.entrepreneurialIdeas.forEach((idea, index) => {
+          const personalizedDescription = generatePersonalizedExplanation(
+            idea,
+            sampleUserProfile,
+            'entrepreneurial'
+          );
+
           addCard(
             `${index + 1}. ${idea.title}`,
-            idea.description,
+            personalizedDescription,
             '#8B7355' // Earth brown
           );
         });
       }
 
-      // Next Steps Section
+      // Action Plan Section
       addSectionHeader('Your Action Plan', '🎯');
       addText(
         '"A journey of a thousand miles begins with a single step." These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you\'ll be walking the path of your dreams.',
@@ -355,84 +372,40 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage-100 via-moss-100 to-earth-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-sage-50 via-moss-50 to-earth-50 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sage-200/20 via-moss-200/20 to-earth-200/20"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-300/30 to-moss-300/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-300/30 to-gold-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-moss-200/20 to-sage-200/20 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sage-100/30 via-moss-100/30 to-earth-100/30"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-200/40 to-moss-200/40 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-200/40 to-gold-200/40 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-moss-200/30 to-sage-200/30 rounded-full blur-2xl animate-pulse delay-500"></div>
       </div>
 
       {/* Header */}
-      <div className="relative z-10 p-6">
+      <ReportHeader
+        onDownloadPDF={handleDownloadPDF}
+        isGeneratingPDF={isGeneratingPDF}
+      />
+
+      {/* Report Metadata */}
+      <div className="relative z-10 px-6 mb-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/">
-              <Button
-                variant="ghost"
-                className="gap-2 text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+          <Card className="p-6 bg-white/80 backdrop-blur-sm rounded-xl border-sage-200">
+            <div className="flex items-center justify-center gap-8">
+              <Badge
+                variant="secondary"
+                className="gap-2 bg-gradient-to-r from-sage-100 to-moss-100 text-sage-800 px-4 py-2 text-sm font-semibold"
               >
-                <Home className="h-4 w-4" />
-                Back to Home
-              </Button>
-            </Link>
-
-            <Button
-              onClick={handleDownloadPDF}
-              disabled={isGeneratingPDF}
-              className="gap-2 bg-gradient-to-r from-sage-500 to-moss-500 hover:from-sage-600 hover:to-moss-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              {isGeneratingPDF ? (
-                <>
-                  <LoadingSpinner size="sm" text="" />
-                  <span>Generating PDF...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4" />
-                  <span>Download PDF</span>
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Title Section */}
-          <Card className="p-12 mb-12 text-center bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl relative overflow-hidden rounded-2xl">
-            {/* Decorative elements */}
-            <div className="absolute top-6 left-6 w-16 h-16 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full opacity-20 animate-bounce"></div>
-            <div className="absolute top-12 right-12 w-12 h-12 bg-gradient-to-r from-earth-400 to-gold-400 rounded-full opacity-20 animate-bounce delay-300"></div>
-            <div className="absolute bottom-8 left-12 w-8 h-8 bg-gradient-to-r from-moss-400 to-sage-400 rounded-full opacity-20 animate-bounce delay-700"></div>
-            <div className="absolute bottom-6 right-8 w-20 h-20 bg-gradient-to-r from-sage-400 to-earth-400 rounded-full opacity-20 animate-bounce delay-1000"></div>
-
-            <div className="relative z-10">
-              <div className="flex items-center justify-center mb-8">
-                <div className="relative">
-                  <NinjaStar size={140} />
-                  <div className="absolute inset-0 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                </div>
-              </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-sage-600 via-moss-600 to-earth-600 bg-clip-text text-transparent mb-6 font-serif">
-                Your Ikigai Career Report
-              </h1>
-              <p className="text-2xl text-earth-700 mb-8 font-medium font-sans">
-                Discover your path to purpose and fulfillment
-              </p>
-              <div className="flex items-center justify-center gap-6">
-                <Badge
-                  variant="secondary"
-                  className="gap-2 bg-gradient-to-r from-sage-100 to-moss-100 text-sage-800 px-4 py-2 text-sm font-semibold"
-                >
-                  <Star className="h-4 w-4" />
-                  Confidence: {report.confidence}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="border-2 border-earth-300 text-earth-700 bg-earth-50 px-4 py-2 text-sm font-semibold"
-                >
-                  Tone: {report.tone}
-                </Badge>
-              </div>
+                <span className="text-sage-600">Confidence:</span>
+                <span className="font-bold">{report.confidence}</span>
+              </Badge>
+              <Badge
+                variant="outline"
+                className="border-2 border-earth-300 text-earth-700 bg-earth-50 px-4 py-2 text-sm font-semibold"
+              >
+                <span className="text-earth-600">Tone:</span>
+                <span className="font-bold">{report.tone}</span>
+              </Badge>
             </div>
           </Card>
         </div>
@@ -441,66 +414,101 @@ export default function ReportPage() {
       {/* Report Content */}
       <div id="report-content" className="relative z-10 px-6 pb-6">
         <div className="max-w-6xl mx-auto space-y-16">
-          {/* Career Paths */}
+          {/* Career Constellation */}
           <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-sage-500 to-moss-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
-                <span className="text-2xl">🌟</span>
-                <span>Your Career Constellation</span>
-              </div>
-              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
-                Discover Your Professional Destiny
-              </h2>
-              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
-                Like Master Oogway once said, &ldquo;Yesterday is history,
-                tomorrow is a mystery, but today is a gift.&rdquo; These career
-                paths align with your unique Ikigai - the intersection of what
-                you love, what you&apos;re good at, what you can be paid for,
-                and what the world needs.
-              </p>
+              <SectionHeader
+                emoji="🌟"
+                title="Your Career Constellation"
+                subtitle="Like Master Oogway once said, 'Yesterday is history, tomorrow is a mystery, but today is a gift.' These career paths align with your unique Ikigai - the intersection of what you love, what you're good at, what you can be paid for, and what the world needs."
+              />
             </motion.div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {report.careers.map((career, index) => (
-                <CareerCard key={index} career={career} index={index} />
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <ReportCard
+                    title={career.title}
+                    rank={index + 1}
+                    description={generatePersonalizedExplanation(
+                      career,
+                      sampleUserProfile,
+                      'career'
+                    )}
+                    details={{
+                      salary: career.salary || '$80,000 – $150,000',
+                      growth: career.growth || 'High potential',
+                    }}
+                    nextSteps={
+                      career.nextSteps || [
+                        'Research the industry and job market',
+                        'Build relevant skills and experience',
+                        'Network with professionals in the field',
+                      ]
+                    }
+                    color="sage"
+                  />
+                </motion.div>
               ))}
             </div>
           </section>
 
-          {/* Majors */}
+          {/* Learning Journey */}
           <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-moss-500 to-sage-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
-                <span className="text-2xl">📚</span>
-                <span>Your Learning Journey</span>
-              </div>
-              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
-                Knowledge is Your Foundation
-              </h2>
-              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
-                &ldquo;The journey of a thousand miles begins with a single
-                step.&rdquo; These fields of study will help you develop the
-                skills and knowledge needed to thrive in your chosen path. Each
-                major is a stepping stone toward your Ikigai.
-              </p>
+              <SectionHeader
+                emoji="📚"
+                title="Your Learning Journey"
+                subtitle="'The journey of a thousand miles begins with a single step.' These fields of study will help you develop the skills and knowledge needed to thrive in your chosen path. Each major is a stepping stone toward your Ikigai."
+              />
             </motion.div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {report.majors.map((major, index) => (
-                <MajorCard key={index} major={major} index={index} />
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <ReportCard
+                    title={major.title}
+                    rank={index + 1}
+                    description={generatePersonalizedExplanation(
+                      major,
+                      sampleUserProfile,
+                      'major'
+                    )}
+                    details={{
+                      duration: major.duration || '4 years',
+                      universities: major.universities || ['Top Universities'],
+                    }}
+                    nextSteps={
+                      major.nextSteps || [
+                        'Research program requirements',
+                        'Visit campuses and meet with advisors',
+                        'Apply for scholarships and financial aid',
+                      ]
+                    }
+                    color="moss"
+                  />
+                </motion.div>
               ))}
             </div>
           </section>
 
-          {/* Entrepreneurial Ideas */}
+          {/* Innovation Garden */}
           {report.entrepreneurialIdeas &&
             report.entrepreneurialIdeas.length > 0 && (
               <section>
@@ -508,74 +516,58 @@ export default function ReportPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-center mb-12"
                 >
-                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-earth-500 to-gold-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
-                    <span className="text-2xl">🚀</span>
-                    <span>Your Innovation Garden</span>
-                  </div>
-                  <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
-                    Plant Seeds of Innovation
-                  </h2>
-                  <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
-                    &ldquo;The best time to plant a tree was 20 years ago. The
-                    second best time is now.&rdquo; These entrepreneurial ideas
-                    are seeds of possibility, waiting for your passion and
-                    dedication to help them bloom into something extraordinary.
-                  </p>
+                  <SectionHeader
+                    emoji="🚀"
+                    title="Your Innovation Garden"
+                    subtitle="'The best time to plant a tree was 20 years ago. The second best time is now.' These entrepreneurial ideas are seeds of possibility, waiting for your passion and dedication to help them bloom into something extraordinary."
+                  />
                 </motion.div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {report.entrepreneurialIdeas.map((idea, index) => (
-                    <EntrepreneurCard key={index} idea={idea} index={index} />
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                    >
+                      <ReportCard
+                        title={idea.title}
+                        rank={index + 1}
+                        description={generatePersonalizedExplanation(
+                          idea,
+                          sampleUserProfile,
+                          'entrepreneurial'
+                        )}
+                        nextSteps={
+                          idea.nextSteps || [
+                            'Research market opportunities',
+                            'Develop a business plan',
+                            'Build a prototype or MVP',
+                          ]
+                        }
+                        color="earth"
+                      />
+                    </motion.div>
                   ))}
                 </div>
               </section>
             )}
 
-          {/* Next Steps */}
+          {/* Action Plan */}
           <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-sage-500 to-earth-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
-                <span className="text-2xl">🎯</span>
-                <span>Your Action Plan</span>
-              </div>
-              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
-                Take Your First Steps
-              </h2>
-              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
-                &ldquo;A journey of a thousand miles begins with a single
-                step.&rdquo; These are your first steps toward living your
-                Ikigai. Start with one, then the next, and before you know it,
-                you&apos;ll be walking the path of your dreams.
-              </p>
+              <SectionHeader
+                emoji="🎯"
+                title="Your Action Plan"
+                subtitle="'A journey of a thousand miles begins with a single step.' These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you'll be walking the path of your dreams."
+              />
             </motion.div>
-            <Card className="p-8 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl rounded-2xl">
-              <div className="space-y-4">
-                {report.nextSteps.map((step, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-sage-50 to-moss-50 hover:from-sage-100 hover:to-moss-100 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                  >
-                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-sage-500 to-moss-500 rounded-full flex items-center justify-center shadow-lg">
-                      <span className="text-white font-bold text-sm">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <p className="text-earth-700 leading-relaxed text-base font-medium font-sans">
-                      {step}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </Card>
+            <ActionPlan steps={report.nextSteps} />
           </section>
 
           {/* Targeted Ads Section - COMMENTED OUT */}
@@ -601,8 +593,14 @@ export default function ReportPage() {
           </section> */}
 
           {/* Footer */}
-          <Card className="p-6 text-center bg-white/80 backdrop-blur-sm rounded-xl">
-            <p className="text-earth-600 mb-4 font-sans">
+          <Card className="p-8 text-center bg-white/90 backdrop-blur-sm rounded-xl border-sage-200">
+            <div className="flex items-center justify-center mb-6">
+              <div className="relative">
+                <NinjaStar size={60} />
+                <div className="absolute inset-0 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full blur-lg opacity-30"></div>
+              </div>
+            </div>
+            <p className="text-earth-600 mb-4 font-sans text-lg">
               This report was generated using AI based on your Ikigai board and
               quiz responses.
             </p>
