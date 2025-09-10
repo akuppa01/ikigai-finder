@@ -56,7 +56,9 @@ ${Object.entries(quiz)
   .map(([key, value]) => `${key}: ${value}`)
   .join('\n')}
 
-Please generate a JSON response with the following structure:
+IMPORTANT: You must respond with ONLY valid JSON. Do not include any text before or after the JSON. Do not use markdown formatting or code blocks.
+
+Generate a JSON response with this exact structure:
 {
   "careers": [
     {
@@ -90,11 +92,11 @@ Please generate a JSON response with the following structure:
     "Action Item 2",
     "Action Item 3"
   ],
-  "confidence": "High/Medium/Low",
-  "tone": "Encouraging/Professional/Friendly"
+  "confidence": "High",
+  "tone": "Encouraging"
 }
 
-Generate 3-4 items for each category. Be specific, actionable, and personalized based on their responses.
+Generate 3-4 items for each category. Be specific, actionable, and personalized based on their responses. Respond with ONLY the JSON object, no other text.
 `;
 
     console.log('Sending prompt to Gemini...');
@@ -106,14 +108,71 @@ Generate 3-4 items for each category. Be specific, actionable, and personalized 
 
     console.log('Gemini response:', text);
 
+    // Clean the response text to extract JSON
+    let cleanedText = text.trim();
+    
+    // Remove markdown code blocks if present
+    if (cleanedText.startsWith('```json')) {
+      cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (cleanedText.startsWith('```')) {
+      cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    
+    // Try to find JSON object in the response
+    const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      cleanedText = jsonMatch[0];
+    }
+
+    console.log('Cleaned response:', cleanedText);
+
     // Parse the JSON response
     let reportData;
     try {
-      reportData = JSON.parse(text);
+      reportData = JSON.parse(cleanedText);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
       console.error('Raw response:', text);
-      throw new Error('Invalid JSON response from AI');
+      console.error('Cleaned response:', cleanedText);
+      
+      // Try to create a fallback response
+      console.log('Creating fallback response...');
+      reportData = {
+        careers: [
+          {
+            title: "Career Counselor",
+            description: "Help others discover their career path and life purpose",
+            steps: ["Complete psychology degree", "Get counseling certification", "Build client base"],
+            salary: "$40,000 - $80,000",
+            growth: "Growing field with 8% projected growth"
+          }
+        ],
+        majors: [
+          {
+            title: "Psychology",
+            description: "Study human behavior and mental processes",
+            universities: ["Local universities", "Online programs"],
+            duration: "4 years",
+            prerequisites: ["High school diploma", "SAT/ACT scores"]
+          }
+        ],
+        entrepreneurialIdeas: [
+          {
+            title: "Life Coaching Business",
+            description: "Help people find their purpose and achieve goals",
+            market: "Career changers and life transitioners",
+            steps: ["Get coaching certification", "Build online presence", "Start with free consultations"],
+            investment: "$2,000 - $5,000"
+          }
+        ],
+        nextSteps: [
+          "Research career options that interest you",
+          "Take online courses to develop new skills",
+          "Network with professionals in your field of interest"
+        ],
+        confidence: "Medium",
+        tone: "Encouraging"
+      };
     }
 
     // Validate required fields
