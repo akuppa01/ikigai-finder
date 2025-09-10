@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!validateQuizResponse(quiz)) {
+    if (!validateQuizResponse(quiz as Record<string, unknown>)) {
       return NextResponse.json(
         { error: 'Invalid quiz responses' },
         { status: 400 }
