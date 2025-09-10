@@ -190,10 +190,8 @@ export default function QuizPage() {
       if (!reportResponse.ok) {
         const errorData = await reportResponse.json();
         console.error('Report generation error:', errorData);
-        const errorMessage =
-          errorData.error ||
-          `HTTP ${reportResponse.status}: ${reportResponse.statusText}`;
-        throw new Error(`Failed to generate report: ${errorMessage}`);
+        const errorMessage = errorData.error || `HTTP ${reportResponse.status}: ${reportResponse.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const { reportId } = await reportResponse.json();
@@ -202,9 +200,8 @@ export default function QuizPage() {
       window.location.href = `/report/${reportId}`;
     } catch (error) {
       console.error('Error generating report:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to generate report: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }

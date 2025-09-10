@@ -217,9 +217,11 @@ export async function POST(request: NextRequest) {
       reportId: report.id,
       report: reportData,
     });
-  } catch {
+  } catch (error) {
+    console.error('Generate report error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to generate report' },
+      { error: `Failed to generate report: ${errorMessage}` },
       { status: 500 }
     );
   }

@@ -9,6 +9,11 @@ export async function generateAIReport(
   quiz: QuizResponse
 ): Promise<AIReport> {
   try {
+    // Check if API key is available
+    if (!process.env.GOOGLE_AI_API_KEY) {
+      throw new Error('Google AI API key not configured');
+    }
+
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     // Organize entries by column and filter out gibberish
@@ -62,7 +67,7 @@ Please generate a JSON response with the following structure:
       "prerequisites": ["Prerequisite 1", "Prerequisite 2"]
     }
   ],
-  "entrepreneurial": [
+  "entrepreneurialIdeas": [
     {
       "title": "Business Idea",
       "description": "Brief description",
@@ -72,13 +77,12 @@ Please generate a JSON response with the following structure:
     }
   ],
   "nextSteps": [
-    {
-      "title": "Action Item",
-      "description": "Description",
-      "timeline": "Timeline",
-      "priority": "High/Medium/Low"
-    }
-  ]
+    "Action Item 1",
+    "Action Item 2",
+    "Action Item 3"
+  ],
+  "confidence": "High/Medium/Low",
+  "tone": "Encouraging/Professional/Friendly"
 }
 
 Generate 3-4 items for each category. Be specific, actionable, and personalized based on their responses.
@@ -88,8 +92,36 @@ Generate 3-4 items for each category. Be specific, actionable, and personalized 
     const response = await result.response;
     const text = response.text();
 
+    console.log('Gemini response:', text);
+
     // Parse the JSON response
-    const reportData = JSON.parse(text);
+    let reportData;
+    try {
+      reportData = JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Raw response:', text);
+      throw new Error('Invalid JSON response from AI');
+    }
+
+    // Validate required fields
+    if (!reportData.careers || !Array.isArray(reportData.careers)) {
+      throw new Error('Missing or invalid careers data');
+    }
+    if (!reportData.majors || !Array.isArray(reportData.majors)) {
+      throw new Error('Missing or invalid majors data');
+    }
+    if (!reportData.nextSteps || !Array.isArray(reportData.nextSteps)) {
+      throw new Error('Missing or invalid nextSteps data');
+    }
+
+    // Ensure confidence and tone are present
+    if (!reportData.confidence) {
+      reportData.confidence = 'Medium';
+    }
+    if (!reportData.tone) {
+      reportData.tone = 'Encouraging';
+    }
 
     return reportData;
   } catch (error) {
