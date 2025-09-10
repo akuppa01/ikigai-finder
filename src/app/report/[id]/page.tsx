@@ -56,7 +56,7 @@ export default function ReportPage() {
       const pageWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm
       const margin = 15;
-      const contentWidth = pageWidth - (margin * 2);
+      const contentWidth = pageWidth - margin * 2;
       let currentY = margin;
 
       // Helper function to add a new page if needed
@@ -70,16 +70,21 @@ export default function ReportPage() {
       };
 
       // Helper function to add text with word wrapping
-      const addText = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
+      const addText = (
+        text: string,
+        fontSize: number,
+        isBold: boolean = false,
+        color: string = '#000000'
+      ) => {
         pdf.setFontSize(fontSize);
-        pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+        pdf.setFont('times', isBold ? 'bold' : 'normal'); // Use Times font for better PDF compatibility
         pdf.setTextColor(color);
-        
+
         const lines = pdf.splitTextToSize(text, contentWidth);
         const lineHeight = fontSize * 0.4;
-        
+
         checkPageBreak(lines.length * lineHeight + 5);
-        
+
         lines.forEach((line: string) => {
           pdf.text(line, margin, currentY);
           currentY += lineHeight;
@@ -89,128 +94,177 @@ export default function ReportPage() {
 
       // Helper function to add a section header
       const addSectionHeader = (title: string, emoji: string) => {
-        checkPageBreak(20);
+        checkPageBreak(30); // Ensure enough space for title and underline
         currentY += 10;
-        
+
         // Add emoji and title
         pdf.setFontSize(18);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor('#4F46E5');
+        pdf.setFont('times', 'bold'); // Use Times font for better PDF compatibility
+        pdf.setTextColor('#68A357'); // Sage green
         pdf.text(`${emoji} ${title}`, margin, currentY);
         currentY += 8;
-        
+
         // Add underline
-        pdf.setDrawColor(79, 70, 229);
+        pdf.setDrawColor(104, 163, 87); // Sage green
         pdf.setLineWidth(0.5);
         pdf.line(margin, currentY, pageWidth - margin, currentY);
         currentY += 10;
       };
 
       // Helper function to add a card-like section
-      const addCard = (title: string, description: string, color: string = '#4F46E5') => {
-        checkPageBreak(25);
-        
+      const addCard = (
+        title: string,
+        description: string,
+        color: string = '#4F46E5'
+      ) => {
+        // Calculate required height for the entire card
+        const titleLines = pdf.splitTextToSize(title, contentWidth - 10);
+        const descLines = pdf.splitTextToSize(description, contentWidth - 10);
+        const requiredHeight =
+          titleLines.length * 14 * 0.4 + descLines.length * 10 * 0.4 + 15;
+
+        checkPageBreak(requiredHeight);
+
         // Card background
         pdf.setFillColor(255, 255, 255);
         pdf.setDrawColor(229, 231, 235);
         pdf.setLineWidth(0.5);
-        pdf.roundedRect(margin, currentY - 5, contentWidth, 20, 2, 2, 'FD');
-        
+        pdf.roundedRect(
+          margin,
+          currentY - 5,
+          contentWidth,
+          requiredHeight,
+          2,
+          2,
+          'FD'
+        );
+
         // Title
         pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFont('times', 'bold'); // Use Times font for better PDF compatibility
         pdf.setTextColor(color);
-        pdf.text(title, margin + 5, currentY + 5);
-        
+        pdf.text(titleLines, margin + 5, currentY + 5);
+        currentY += titleLines.length * 14 * 0.4 + 3;
+
         // Description
         pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFont('times', 'normal'); // Use Times font for better PDF compatibility
         pdf.setTextColor('#374151');
-        const descLines = pdf.splitTextToSize(description, contentWidth - 10);
-        pdf.text(descLines, margin + 5, currentY + 10);
-        
-        currentY += 25;
+        pdf.text(descLines, margin + 5, currentY);
+        currentY += descLines.length * 10 * 0.4 + 10;
       };
 
       // Title Page
-      pdf.setFillColor(79, 70, 229);
+      pdf.setFillColor(104, 163, 87); // Sage green
       pdf.rect(0, 0, pageWidth, 60, 'F');
-      
+
       pdf.setFontSize(24);
-      pdf.setFont('helvetica', 'bold');
+      pdf.setFont('times', 'bold'); // Use Times font for better PDF compatibility
       pdf.setTextColor(255, 255, 255);
-      pdf.text('Your Ikigai Career Report', pageWidth / 2, 25, { align: 'center' });
-      
+      pdf.text('Your Ikigai Career Report', pageWidth / 2, 25, {
+        align: 'center',
+      });
+
       pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('Discover your path to purpose and fulfillment', pageWidth / 2, 35, { align: 'center' });
-      
+      pdf.setFont('times', 'normal'); // Use Times font for better PDF compatibility
+      pdf.text(
+        'Discover your path to purpose and fulfillment',
+        pageWidth / 2,
+        35,
+        { align: 'center' }
+      );
+
       currentY = 80;
 
       // Report metadata
-      addText(`Confidence Level: ${report.confidence}`, 12, true, '#059669');
-      addText(`Tone: ${report.tone}`, 12, true, '#7C3AED');
+      addText(`Confidence Level: ${report.confidence}`, 12, true, '#68A357'); // Sage green
+      addText(`Tone: ${report.tone}`, 12, true, '#8B7355'); // Earth brown
       currentY += 10;
 
       // Career Paths Section
       addSectionHeader('Your Career Constellation', '🌟');
-      addText('Like Master Oogway once said, "Yesterday is history, tomorrow is a mystery, but today is a gift." These career paths align with your unique Ikigai - the intersection of what you love, what you\'re good at, what you can be paid for, and what the world needs.', 11);
+      addText(
+        'Like Master Oogway once said, "Yesterday is history, tomorrow is a mystery, but today is a gift." These career paths align with your unique Ikigai - the intersection of what you love, what you\'re good at, what you can be paid for, and what the world needs.',
+        11
+      );
       currentY += 5;
 
       report.careers.forEach((career, index) => {
         addCard(
           `${index + 1}. ${career.title}`,
           career.description,
-          '#4F46E5'
+          '#68A357' // Sage green
         );
       });
 
       // Majors Section
       addSectionHeader('Your Learning Journey', '📚');
-      addText('"The journey of a thousand miles begins with a single step." These fields of study will help you develop the skills and knowledge needed to thrive in your chosen path. Each major is a stepping stone toward your Ikigai.', 11);
+      addText(
+        '"The journey of a thousand miles begins with a single step." These fields of study will help you develop the skills and knowledge needed to thrive in your chosen path. Each major is a stepping stone toward your Ikigai.',
+        11
+      );
       currentY += 5;
 
       report.majors.forEach((major, index) => {
         addCard(
           `${index + 1}. ${major.title}`,
           major.description,
-          '#059669'
+          '#5B7A34' // Moss green
         );
       });
 
       // Entrepreneurial Ideas Section
-      if (report.entrepreneurialIdeas && report.entrepreneurialIdeas.length > 0) {
+      if (
+        report.entrepreneurialIdeas &&
+        report.entrepreneurialIdeas.length > 0
+      ) {
         addSectionHeader('Your Innovation Garden', '🚀');
-        addText('"The best time to plant a tree was 20 years ago. The second best time is now." These entrepreneurial ideas are seeds of possibility, waiting for your passion and dedication to help them bloom into something extraordinary.', 11);
+        addText(
+          '"The best time to plant a tree was 20 years ago. The second best time is now." These entrepreneurial ideas are seeds of possibility, waiting for your passion and dedication to help them bloom into something extraordinary.',
+          11
+        );
         currentY += 5;
 
         report.entrepreneurialIdeas.forEach((idea, index) => {
           addCard(
             `${index + 1}. ${idea.title}`,
             idea.description,
-            '#EA580C'
+            '#8B7355' // Earth brown
           );
         });
       }
 
       // Next Steps Section
       addSectionHeader('Your Action Plan', '🎯');
-      addText('"A journey of a thousand miles begins with a single step." These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you\'ll be walking the path of your dreams.', 11);
+      addText(
+        '"A journey of a thousand miles begins with a single step." These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you\'ll be walking the path of your dreams.',
+        11
+      );
       currentY += 5;
 
       report.nextSteps.forEach((step, index) => {
         addCard(
           `Step ${index + 1}`,
           step,
-          '#7C3AED'
+          '#F59E0B' // Gold
         );
       });
 
       // Footer
       checkPageBreak(20);
       currentY += 10;
-      addText('This report was generated using AI based on your Ikigai board and quiz responses.', 10, false, '#6B7280');
-      addText('Remember: Your journey is unique. Use this as a starting point, not a destination.', 10, false, '#6B7280');
+      addText(
+        'This report was generated using AI based on your Ikigai board and quiz responses.',
+        10,
+        false,
+        '#6B7280'
+      );
+      addText(
+        'Remember: Your journey is unique. Use this as a starting point, not a destination.',
+        10,
+        false,
+        '#6B7280'
+      );
 
       // Download
       pdf.save('ikigai-career-report.pdf');
@@ -301,13 +355,13 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-sage-100 via-moss-100 to-earth-100 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-pink-400/30 to-orange-400/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-yellow-400/20 to-red-400/20 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sage-200/20 via-moss-200/20 to-earth-200/20"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-300/30 to-moss-300/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-300/30 to-gold-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-moss-200/20 to-sage-200/20 rounded-full blur-2xl animate-pulse delay-500"></div>
       </div>
 
       {/* Header */}
@@ -327,7 +381,7 @@ export default function ReportPage() {
             <Button
               onClick={handleDownloadPDF}
               disabled={isGeneratingPDF}
-              className="gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              className="gap-2 bg-gradient-to-r from-sage-500 to-moss-500 hover:from-sage-600 hover:to-moss-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
               {isGeneratingPDF ? (
                 <>
@@ -344,37 +398,37 @@ export default function ReportPage() {
           </div>
 
           {/* Title Section */}
-          <Card className="p-12 mb-12 text-center bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl relative overflow-hidden">
+          <Card className="p-12 mb-12 text-center bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl relative overflow-hidden rounded-2xl">
             {/* Decorative elements */}
-            <div className="absolute top-6 left-6 w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-bounce"></div>
-            <div className="absolute top-12 right-12 w-12 h-12 bg-gradient-to-r from-pink-400 to-orange-400 rounded-full opacity-20 animate-bounce delay-300"></div>
-            <div className="absolute bottom-8 left-12 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full opacity-20 animate-bounce delay-700"></div>
-            <div className="absolute bottom-6 right-8 w-20 h-20 bg-gradient-to-r from-green-400 to-blue-400 rounded-full opacity-20 animate-bounce delay-1000"></div>
+            <div className="absolute top-6 left-6 w-16 h-16 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full opacity-20 animate-bounce"></div>
+            <div className="absolute top-12 right-12 w-12 h-12 bg-gradient-to-r from-earth-400 to-gold-400 rounded-full opacity-20 animate-bounce delay-300"></div>
+            <div className="absolute bottom-8 left-12 w-8 h-8 bg-gradient-to-r from-moss-400 to-sage-400 rounded-full opacity-20 animate-bounce delay-700"></div>
+            <div className="absolute bottom-6 right-8 w-20 h-20 bg-gradient-to-r from-sage-400 to-earth-400 rounded-full opacity-20 animate-bounce delay-1000"></div>
 
             <div className="relative z-10">
               <div className="flex items-center justify-center mb-8">
                 <div className="relative">
                   <NinjaStar size={140} />
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
                 </div>
               </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-sage-600 via-moss-600 to-earth-600 bg-clip-text text-transparent mb-6 font-serif">
                 Your Ikigai Career Report
               </h1>
-              <p className="text-2xl text-gray-700 mb-8 font-medium">
+              <p className="text-2xl text-earth-700 mb-8 font-medium font-sans">
                 Discover your path to purpose and fulfillment
               </p>
               <div className="flex items-center justify-center gap-6">
                 <Badge
                   variant="secondary"
-                  className="gap-2 bg-gradient-to-r from-emerald-100 to-cyan-100 text-emerald-800 px-4 py-2 text-sm font-semibold"
+                  className="gap-2 bg-gradient-to-r from-sage-100 to-moss-100 text-sage-800 px-4 py-2 text-sm font-semibold"
                 >
                   <Star className="h-4 w-4" />
                   Confidence: {report.confidence}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="border-2 border-purple-300 text-purple-700 bg-purple-50 px-4 py-2 text-sm font-semibold"
+                  className="border-2 border-earth-300 text-earth-700 bg-earth-50 px-4 py-2 text-sm font-semibold"
                 >
                   Tone: {report.tone}
                 </Badge>
@@ -395,14 +449,14 @@ export default function ReportPage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-sage-500 to-moss-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
                 <span className="text-2xl">🌟</span>
                 <span>Your Career Constellation</span>
               </div>
-              <h2 className="text-4xl font-bold text-white mb-6">
+              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
                 Discover Your Professional Destiny
               </h2>
-              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
                 Like Master Oogway once said, &ldquo;Yesterday is history,
                 tomorrow is a mystery, but today is a gift.&rdquo; These career
                 paths align with your unique Ikigai - the intersection of what
@@ -425,14 +479,14 @@ export default function ReportPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-moss-500 to-sage-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
                 <span className="text-2xl">📚</span>
                 <span>Your Learning Journey</span>
               </div>
-              <h2 className="text-4xl font-bold text-white mb-6">
+              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
                 Knowledge is Your Foundation
               </h2>
-              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
                 &ldquo;The journey of a thousand miles begins with a single
                 step.&rdquo; These fields of study will help you develop the
                 skills and knowledge needed to thrive in your chosen path. Each
@@ -456,14 +510,14 @@ export default function ReportPage() {
                   transition={{ duration: 0.6, delay: 0.4 }}
                   className="text-center mb-12"
                 >
-                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-earth-500 to-gold-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
                     <span className="text-2xl">🚀</span>
                     <span>Your Innovation Garden</span>
                   </div>
-                  <h2 className="text-4xl font-bold text-white mb-6">
+                  <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
                     Plant Seeds of Innovation
                   </h2>
-                  <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+                  <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
                     &ldquo;The best time to plant a tree was 20 years ago. The
                     second best time is now.&rdquo; These entrepreneurial ideas
                     are seeds of possibility, waiting for your passion and
@@ -486,21 +540,21 @@ export default function ReportPage() {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="text-center mb-12"
             >
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-sage-500 to-earth-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
                 <span className="text-2xl">🎯</span>
                 <span>Your Action Plan</span>
               </div>
-              <h2 className="text-4xl font-bold text-white mb-6">
+              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
                 Take Your First Steps
               </h2>
-              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+              <p className="text-xl text-earth-700 leading-relaxed max-w-3xl mx-auto font-sans">
                 &ldquo;A journey of a thousand miles begins with a single
                 step.&rdquo; These are your first steps toward living your
                 Ikigai. Start with one, then the next, and before you know it,
                 you&apos;ll be walking the path of your dreams.
               </p>
             </motion.div>
-            <Card className="p-8 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl">
+            <Card className="p-8 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl rounded-2xl">
               <div className="space-y-4">
                 {report.nextSteps.map((step, index) => (
                   <motion.div
@@ -508,14 +562,14 @@ export default function ReportPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-sage-50 to-moss-50 hover:from-sage-100 hover:to-moss-100 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   >
-                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-sage-500 to-moss-500 rounded-full flex items-center justify-center shadow-lg">
                       <span className="text-white font-bold text-sm">
                         {index + 1}
                       </span>
                     </div>
-                    <p className="text-gray-700 leading-relaxed text-base font-medium">
+                    <p className="text-earth-700 leading-relaxed text-base font-medium font-sans">
                       {step}
                     </p>
                   </motion.div>
@@ -547,12 +601,12 @@ export default function ReportPage() {
           </section> */}
 
           {/* Footer */}
-          <Card className="p-6 text-center bg-white/80 backdrop-blur-sm">
-            <p className="text-gray-600 mb-4">
+          <Card className="p-6 text-center bg-white/80 backdrop-blur-sm rounded-xl">
+            <p className="text-earth-600 mb-4 font-sans">
               This report was generated using AI based on your Ikigai board and
               quiz responses.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-earth-500 font-sans">
               Remember: Your journey is unique. Use this as a starting point,
               not a destination.
             </p>

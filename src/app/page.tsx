@@ -73,7 +73,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-sage-50 via-moss-50 to-earth-50 relative overflow-hidden">
       <BackgroundBlobs />
 
       {/* Header */}
@@ -88,7 +88,7 @@ export default function HomePage() {
             <Button
               onClick={() => setShowAuth(true)}
               variant="outline"
-              className="bg-white/80 backdrop-blur-sm"
+              className="bg-white/80 backdrop-blur-sm border-sage-300 text-sage-700 hover:bg-sage-50"
             >
               Sign In
             </Button>
@@ -104,10 +104,10 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-6xl md:text-8xl font-bold text-sage-800 mb-6 tracking-tight font-serif">
               IKIGAI
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-earth-700 mb-8 max-w-3xl mx-auto leading-relaxed font-sans">
               Discover your purpose through the intersection of what you love,
               what you&apos;re good at, what you can be paid for, and what the
               world needs.
@@ -132,12 +132,12 @@ export default function HomePage() {
             <Button
               onClick={handleStartFresh}
               size="lg"
-              className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="text-lg px-8 py-6 bg-gradient-to-r from-sage-500 to-moss-500 hover:from-sage-600 hover:to-moss-600 text-white font-sans"
             >
               Start Your Ikigai Journey
             </Button>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-earth-600">
               No account required • Takes 5-10 minutes
             </p>
           </motion.div>
@@ -154,10 +154,10 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-sage-800 mb-4 font-serif">
               How It Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-earth-700 max-w-2xl mx-auto font-sans">
               A simple three-step process to discover your ideal career path
             </p>
           </motion.div>
@@ -169,21 +169,21 @@ export default function HomePage() {
                 title: 'Build Your Board',
                 description:
                   'Fill in four columns with your passions, skills, potential income sources, and what the world needs.',
-                color: 'from-blue-500 to-blue-600',
+                color: 'from-sage-500 to-sage-600',
               },
               {
                 step: '02',
                 title: 'Take the Quiz',
                 description:
                   'Answer 8 questions about your preferences, work style, and goals to refine your profile.',
-                color: 'from-green-500 to-green-600',
+                color: 'from-moss-500 to-moss-600',
               },
               {
                 step: '03',
                 title: 'Get Your Report',
                 description:
                   'Receive personalized career recommendations, educational paths, and actionable next steps.',
-                color: 'from-purple-500 to-purple-600',
+                color: 'from-earth-500 to-earth-600',
               },
             ].map((feature, index) => (
               <motion.div
@@ -193,16 +193,16 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: index * 0.2 }}
                 viewport={{ once: true }}
               >
-                <Card className="p-8 text-center bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                <Card className="p-8 text-center bg-white/90 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-sage-200 rounded-xl">
                   <div
                     className={`w-16 h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center text-white font-bold text-xl mx-auto mb-6`}
                   >
                     {feature.step}
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  <h3 className="text-2xl font-bold text-sage-800 mb-4 font-serif">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-earth-700 leading-relaxed font-sans">
                     {feature.description}
                   </p>
                 </Card>
@@ -221,18 +221,18 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <Card className="p-12 bg-white/80 backdrop-blur-sm">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+            <Card className="p-12 bg-white/90 backdrop-blur-sm border-sage-200 rounded-xl">
+              <h2 className="text-4xl font-bold text-sage-800 mb-6 font-serif">
                 Ready to Find Your Purpose?
               </h2>
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-xl text-earth-700 mb-8 font-sans">
                 Join thousands who have discovered their ideal career path
                 through Ikigai.
               </p>
               <Button
                 onClick={handleStartFresh}
                 size="lg"
-                className="text-lg px-8 py-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                className="text-lg px-8 py-6 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-sans"
               >
                 Start Now - It&apos;s Free
               </Button>
@@ -269,16 +269,20 @@ export default function HomePage() {
                 {authMessage}
               </p>
             )}
-            <div className="flex gap-2">
+            <div className="flex gap-3 justify-center">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowAuth(false)}
-                className="flex-1"
+                className="flex-1 max-w-[140px]"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading} className="flex-1">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 max-w-[140px]"
+              >
                 {isLoading ? 'Sending...' : 'Send Magic Link'}
               </Button>
             </div>
