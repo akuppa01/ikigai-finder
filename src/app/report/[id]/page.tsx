@@ -102,11 +102,14 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
-        
+
         {/* Home Button - Top Left */}
         <div className="relative z-10 p-6">
           <Link href="/">
-            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+            <Button
+              variant="ghost"
+              className="gap-2 text-gray-600 hover:text-gray-900"
+            >
               <Home className="h-4 w-4" />
               Back to Home
             </Button>
@@ -127,11 +130,14 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
-        
+
         {/* Home Button - Top Left */}
         <div className="relative z-10 p-6">
           <Link href="/">
-            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+            <Button
+              variant="ghost"
+              className="gap-2 text-gray-600 hover:text-gray-900"
+            >
               <Home className="h-4 w-4" />
               Back to Home
             </Button>
@@ -171,15 +177,24 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-      <BackgroundBlobs />
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-pink-400/30 to-orange-400/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-yellow-400/20 to-red-400/20 rounded-full blur-2xl animate-pulse delay-500"></div>
+      </div>
 
       {/* Header */}
       <div className="relative z-10 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
             <Link href="/">
-              <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+              <Button
+                variant="ghost"
+                className="gap-2 text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+              >
                 <Home className="h-4 w-4" />
                 Back to Home
               </Button>
@@ -188,7 +203,7 @@ export default function ReportPage() {
             <Button
               onClick={handleDownloadPDF}
               disabled={isGeneratingPDF}
-              className="gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              className="gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
               {isGeneratingPDF ? (
                 <>
@@ -205,34 +220,37 @@ export default function ReportPage() {
           </div>
 
           {/* Title Section */}
-          <Card className="p-8 mb-8 text-center bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200/50 relative overflow-hidden">
+          <Card className="p-12 mb-12 text-center bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute top-4 left-4 w-8 h-8 bg-yellow-200/30 rounded-full"></div>
-            <div className="absolute top-8 right-8 w-6 h-6 bg-orange-200/30 rounded-full"></div>
-            <div className="absolute bottom-6 left-8 w-4 h-4 bg-yellow-300/30 rounded-full"></div>
-            <div className="absolute bottom-4 right-6 w-10 h-10 bg-orange-200/20 rounded-full"></div>
+            <div className="absolute top-6 left-6 w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-bounce"></div>
+            <div className="absolute top-12 right-12 w-12 h-12 bg-gradient-to-r from-pink-400 to-orange-400 rounded-full opacity-20 animate-bounce delay-300"></div>
+            <div className="absolute bottom-8 left-12 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full opacity-20 animate-bounce delay-700"></div>
+            <div className="absolute bottom-6 right-8 w-20 h-20 bg-gradient-to-r from-green-400 to-blue-400 rounded-full opacity-20 animate-bounce delay-1000"></div>
 
             <div className="relative z-10">
-              <div className="flex items-center justify-center mb-6">
-                <NinjaStar size={120} />
+              <div className="flex items-center justify-center mb-8">
+                <div className="relative">
+                  <NinjaStar size={140} />
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                </div>
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                 Your Ikigai Career Report
               </h1>
-              <p className="text-xl text-gray-600 mb-6">
+              <p className="text-2xl text-gray-700 mb-8 font-medium">
                 Discover your path to purpose and fulfillment
               </p>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-6">
                 <Badge
                   variant="secondary"
-                  className="gap-1 bg-yellow-100 text-yellow-800"
+                  className="gap-2 bg-gradient-to-r from-emerald-100 to-cyan-100 text-emerald-800 px-4 py-2 text-sm font-semibold"
                 >
-                  <Star className="h-3 w-3" />
+                  <Star className="h-4 w-4" />
                   Confidence: {report.confidence}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="border-yellow-300 text-yellow-700"
+                  className="border-2 border-purple-300 text-purple-700 bg-purple-50 px-4 py-2 text-sm font-semibold"
                 >
                   Tone: {report.tone}
                 </Badge>
@@ -244,27 +262,31 @@ export default function ReportPage() {
 
       {/* Report Content */}
       <div id="report-content" className="relative z-10 px-6 pb-6">
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-16">
           {/* Career Paths */}
           <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-8"
+              className="text-center mb-12"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                🌟 Your Career Constellation
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+                <span className="text-2xl">🌟</span>
+                <span>Your Career Constellation</span>
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Discover Your Professional Destiny
               </h2>
-              <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                Like Master Oogway once said, &ldquo;Yesterday is history, tomorrow is
-                a mystery, but today is a gift.&rdquo; These career paths align with
-                your unique Ikigai - the intersection of what you love, what
-                you&apos;re good at, what you can be paid for, and what the world
-                needs.
+              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+                Like Master Oogway once said, &ldquo;Yesterday is history,
+                tomorrow is a mystery, but today is a gift.&rdquo; These career
+                paths align with your unique Ikigai - the intersection of what
+                you love, what you&apos;re good at, what you can be paid for,
+                and what the world needs.
               </p>
             </motion.div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {report.careers.map((career, index) => (
                 <CareerCard key={index} career={career} index={index} />
               ))}
@@ -277,19 +299,23 @@ export default function ReportPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center mb-8"
+              className="text-center mb-12"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                📚 Your Learning Journey
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+                <span className="text-2xl">📚</span>
+                <span>Your Learning Journey</span>
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Knowledge is Your Foundation
               </h2>
-              <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                &ldquo;The journey of a thousand miles begins with a single step.&rdquo;
-                These fields of study will help you develop the skills and
-                knowledge needed to thrive in your chosen path. Each major is a
-                stepping stone toward your Ikigai.
+              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+                &ldquo;The journey of a thousand miles begins with a single
+                step.&rdquo; These fields of study will help you develop the
+                skills and knowledge needed to thrive in your chosen path. Each
+                major is a stepping stone toward your Ikigai.
               </p>
             </motion.div>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {report.majors.map((major, index) => (
                 <MajorCard key={index} major={major} index={index} />
               ))}
@@ -304,19 +330,23 @@ export default function ReportPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-center mb-8"
+                  className="text-center mb-12"
                 >
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                    🚀 Your Innovation Garden
+                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+                    <span className="text-2xl">🚀</span>
+                    <span>Your Innovation Garden</span>
+                  </div>
+                  <h2 className="text-4xl font-bold text-white mb-6">
+                    Plant Seeds of Innovation
                   </h2>
-                  <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                    &ldquo;The best time to plant a tree was 20 years ago. The second
-                    best time is now.&rdquo; These entrepreneurial ideas are seeds of
-                    possibility, waiting for your passion and dedication to help
-                    them bloom into something extraordinary.
+                  <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+                    &ldquo;The best time to plant a tree was 20 years ago. The
+                    second best time is now.&rdquo; These entrepreneurial ideas
+                    are seeds of possibility, waiting for your passion and
+                    dedication to help them bloom into something extraordinary.
                   </p>
                 </motion.div>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {report.entrepreneurialIdeas.map((idea, index) => (
                     <EntrepreneurCard key={index} idea={idea} index={index} />
                   ))}
@@ -330,34 +360,38 @@ export default function ReportPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-center mb-8"
+              className="text-center mb-12"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                🎯 Your Action Plan
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full text-lg font-semibold mb-6 shadow-lg">
+                <span className="text-2xl">🎯</span>
+                <span>Your Action Plan</span>
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Take Your First Steps
               </h2>
-              <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                &ldquo;A journey of a thousand miles begins with a single step.&rdquo; These
-                are your first steps toward living your Ikigai. Start with one,
-                then the next, and before you know it, you&apos;ll be walking the
-                path of your dreams.
+              <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
+                &ldquo;A journey of a thousand miles begins with a single
+                step.&rdquo; These are your first steps toward living your
+                Ikigai. Start with one, then the next, and before you know it,
+                you&apos;ll be walking the path of your dreams.
               </p>
             </motion.div>
-            <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200/50">
-              <div className="space-y-3">
+            <Card className="p-8 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl border-0 shadow-2xl">
+              <div className="space-y-4">
                 {report.nextSteps.map((step, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-white/60 hover:bg-white/80 transition-all duration-200"
+                    className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   >
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-xs">
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                      <span className="text-white font-bold text-sm">
                         {index + 1}
                       </span>
                     </div>
-                    <p className="text-gray-700 leading-relaxed text-sm">
+                    <p className="text-gray-700 leading-relaxed text-base font-medium">
                       {step}
                     </p>
                   </motion.div>
