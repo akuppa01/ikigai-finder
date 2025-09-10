@@ -14,7 +14,13 @@ export async function generateAIReport(
       throw new Error('Google AI API key not configured');
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    console.log('API Key format check:', {
+      hasKey: !!process.env.GOOGLE_AI_API_KEY,
+      keyLength: process.env.GOOGLE_AI_API_KEY.length,
+      keyPrefix: process.env.GOOGLE_AI_API_KEY.substring(0, 10) + '...'
+    });
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     // Organize entries by column and filter out gibberish
     const organizedEntries = {
