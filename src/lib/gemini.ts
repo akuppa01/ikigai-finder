@@ -14,9 +14,9 @@ export async function generateAIReport(
     // Organize entries by column and filter out gibberish
     const organizedEntries = {
       love: entries.filter(e => e.column === 'love').map(e => e.text).filter(text => text.trim().length > 2),
-      goodAt: entries.filter(e => e.column === 'goodAt').map(e => e.text).filter(text => text.trim().length > 2),
-      earn: entries.filter(e => e.column === 'earn').map(e => e.text).filter(text => text.trim().length > 2),
-      needs: entries.filter(e => e.column === 'needs').map(e => e.text).filter(text => text.trim().length > 2),
+      goodAt: entries.filter(e => e.column === 'good_at').map(e => e.text).filter(text => text.trim().length > 2),
+      earn: entries.filter(e => e.column === 'paid_for').map(e => e.text).filter(text => text.trim().length > 2),
+      needs: entries.filter(e => e.column === 'world_needs').map(e => e.text).filter(text => text.trim().length > 2),
     };
 
     // If no meaningful entries, use default values

@@ -33,9 +33,8 @@ export function validateEntries(entries: unknown[]): boolean {
     entry =>
       entry &&
       typeof entry.text === 'string' &&
-      entry.text.trim().length > 0 &&
       entry.text.trim().length <= 500 &&
-      ['love', 'goodAt', 'earn', 'needs'].includes(entry.column)
+      ['love', 'good_at', 'paid_for', 'world_needs'].includes(entry.column)
   );
 }
 
