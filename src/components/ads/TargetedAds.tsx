@@ -1,15 +1,20 @@
 'use client';
 
-import { AIReport } from '@/lib/types';
-import GoogleAdSense from './GoogleAdSense';
-import AffiliateBanner from './AffiliateBanner';
+// MONETIZATION COMPONENTS COMMENTED OUT
+// import { AIReport } from '@/lib/types';
+// import GoogleAdSense from './GoogleAdSense';
+// import AffiliateBanner from './AffiliateBanner';
 
-interface TargetedAdsProps {
-  report: AIReport;
-  className?: string;
-}
+// interface TargetedAdsProps {
+//   report: AIReport;
+//   className?: string;
+// }
 
-export default function TargetedAds({ report, className = '' }: TargetedAdsProps) {
+export default function TargetedAds({ report, className = '' }: any) {
+  // MONETIZATION COMPONENTS COMMENTED OUT - RETURN EMPTY DIV
+  return <div className={className}></div>;
+  
+  /* COMMENTED OUT - ORIGINAL MONETIZATION CODE
   // Extract keywords from the report for targeted ads
   const extractKeywords = (report: AIReport) => {
     const keywords = new Set<string>();
@@ -190,4 +195,5 @@ export default function TargetedAds({ report, className = '' }: TargetedAdsProps
       </div>
     </div>
   );
+  */
 }

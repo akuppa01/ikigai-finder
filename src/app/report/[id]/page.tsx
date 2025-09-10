@@ -14,8 +14,8 @@ import CareerCard from '@/components/report/CareerCard';
 import MajorCard from '@/components/report/MajorCard';
 import EntrepreneurCard from '@/components/report/EntrepreneurCard';
 import BackgroundBlobs from '@/components/BackgroundBlobs';
-import TargetedAds from '@/components/ads/TargetedAds';
-import PremiumFeatures from '@/components/premium/PremiumFeatures';
+// import TargetedAds from '@/components/ads/TargetedAds';
+// import PremiumFeatures from '@/components/premium/PremiumFeatures';
 import { AIReport } from '@/lib/openai';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -51,42 +51,166 @@ export default function ReportPage() {
     setIsGeneratingPDF(true);
 
     try {
-      const element = document.getElementById('report-content');
-      if (!element) {
-        throw new Error('Report content not found');
-      }
+      // Create a new PDF with better layout
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const margin = 15;
+      const contentWidth = pageWidth - (margin * 2);
+      let currentY = margin;
 
-      // Generate canvas
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#FFF8E7',
-        logging: false,
-        width: element.scrollWidth,
-        height: element.scrollHeight,
+      // Helper function to add a new page if needed
+      const checkPageBreak = (requiredHeight: number) => {
+        if (currentY + requiredHeight > pageHeight - margin) {
+          pdf.addPage();
+          currentY = margin;
+          return true;
+        }
+        return false;
+      };
+
+      // Helper function to add text with word wrapping
+      const addText = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+        pdf.setTextColor(color);
+        
+        const lines = pdf.splitTextToSize(text, contentWidth);
+        const lineHeight = fontSize * 0.4;
+        
+        checkPageBreak(lines.length * lineHeight + 5);
+        
+        lines.forEach((line: string) => {
+          pdf.text(line, margin, currentY);
+          currentY += lineHeight;
+        });
+        currentY += 5;
+      };
+
+      // Helper function to add a section header
+      const addSectionHeader = (title: string, emoji: string) => {
+        checkPageBreak(20);
+        currentY += 10;
+        
+        // Add emoji and title
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor('#4F46E5');
+        pdf.text(`${emoji} ${title}`, margin, currentY);
+        currentY += 8;
+        
+        // Add underline
+        pdf.setDrawColor(79, 70, 229);
+        pdf.setLineWidth(0.5);
+        pdf.line(margin, currentY, pageWidth - margin, currentY);
+        currentY += 10;
+      };
+
+      // Helper function to add a card-like section
+      const addCard = (title: string, description: string, color: string = '#4F46E5') => {
+        checkPageBreak(25);
+        
+        // Card background
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(229, 231, 235);
+        pdf.setLineWidth(0.5);
+        pdf.roundedRect(margin, currentY - 5, contentWidth, 20, 2, 2, 'FD');
+        
+        // Title
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(color);
+        pdf.text(title, margin + 5, currentY + 5);
+        
+        // Description
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor('#374151');
+        const descLines = pdf.splitTextToSize(description, contentWidth - 10);
+        pdf.text(descLines, margin + 5, currentY + 10);
+        
+        currentY += 25;
+      };
+
+      // Title Page
+      pdf.setFillColor(79, 70, 229);
+      pdf.rect(0, 0, pageWidth, 60, 'F');
+      
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Your Ikigai Career Report', pageWidth / 2, 25, { align: 'center' });
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Discover your path to purpose and fulfillment', pageWidth / 2, 35, { align: 'center' });
+      
+      currentY = 80;
+
+      // Report metadata
+      addText(`Confidence Level: ${report.confidence}`, 12, true, '#059669');
+      addText(`Tone: ${report.tone}`, 12, true, '#7C3AED');
+      currentY += 10;
+
+      // Career Paths Section
+      addSectionHeader('Your Career Constellation', '🌟');
+      addText('Like Master Oogway once said, "Yesterday is history, tomorrow is a mystery, but today is a gift." These career paths align with your unique Ikigai - the intersection of what you love, what you\'re good at, what you can be paid for, and what the world needs.', 11);
+      currentY += 5;
+
+      report.careers.forEach((career, index) => {
+        addCard(
+          `${index + 1}. ${career.title}`,
+          career.description,
+          '#4F46E5'
+        );
       });
 
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Majors Section
+      addSectionHeader('Your Learning Journey', '📚');
+      addText('"The journey of a thousand miles begins with a single step." These fields of study will help you develop the skills and knowledge needed to thrive in your chosen path. Each major is a stepping stone toward your Ikigai.', 11);
+      currentY += 5;
 
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      report.majors.forEach((major, index) => {
+        addCard(
+          `${index + 1}. ${major.title}`,
+          major.description,
+          '#059669'
+        );
+      });
 
-      let position = 0;
+      // Entrepreneurial Ideas Section
+      if (report.entrepreneurialIdeas && report.entrepreneurialIdeas.length > 0) {
+        addSectionHeader('Your Innovation Garden', '🚀');
+        addText('"The best time to plant a tree was 20 years ago. The second best time is now." These entrepreneurial ideas are seeds of possibility, waiting for your passion and dedication to help them bloom into something extraordinary.', 11);
+        currentY += 5;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        report.entrepreneurialIdeas.forEach((idea, index) => {
+          addCard(
+            `${index + 1}. ${idea.title}`,
+            idea.description,
+            '#EA580C'
+          );
+        });
       }
+
+      // Next Steps Section
+      addSectionHeader('Your Action Plan', '🎯');
+      addText('"A journey of a thousand miles begins with a single step." These are your first steps toward living your Ikigai. Start with one, then the next, and before you know it, you\'ll be walking the path of your dreams.', 11);
+      currentY += 5;
+
+      report.nextSteps.forEach((step, index) => {
+        addCard(
+          `Step ${index + 1}`,
+          step,
+          '#7C3AED'
+        );
+      });
+
+      // Footer
+      checkPageBreak(20);
+      currentY += 10;
+      addText('This report was generated using AI based on your Ikigai board and quiz responses.', 10, false, '#6B7280');
+      addText('Remember: Your journey is unique. Use this as a starting point, not a destination.', 10, false, '#6B7280');
 
       // Download
       pdf.save('ikigai-career-report.pdf');
@@ -400,8 +524,8 @@ export default function ReportPage() {
             </Card>
           </section>
 
-          {/* Targeted Ads Section */}
-          <section>
+          {/* Targeted Ads Section - COMMENTED OUT */}
+          {/* <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -409,10 +533,10 @@ export default function ReportPage() {
             >
               <TargetedAds report={report} />
             </motion.div>
-          </section>
+          </section> */}
 
-          {/* Premium Features Section */}
-          <section>
+          {/* Premium Features Section - COMMENTED OUT */}
+          {/* <section>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -420,7 +544,7 @@ export default function ReportPage() {
             >
               <PremiumFeatures />
             </motion.div>
-          </section>
+          </section> */}
 
           {/* Footer */}
           <Card className="p-6 text-center bg-white/80 backdrop-blur-sm">

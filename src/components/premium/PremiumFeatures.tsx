@@ -1,15 +1,20 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Star, Zap, Users, BarChart3, Download, MessageCircle, Clock } from 'lucide-react';
+// MONETIZATION COMPONENTS COMMENTED OUT
+// import { Card } from '@/components/ui/card';
+// import { Button } from '@/components/ui/button';
+// import { Badge } from '@/components/ui/badge';
+// import { Check, Star, Zap, Users, BarChart3, Download, MessageCircle, Clock } from 'lucide-react';
 
-interface PremiumFeaturesProps {
-  className?: string;
-}
+// interface PremiumFeaturesProps {
+//   className?: string;
+// }
 
-export default function PremiumFeatures({ className = '' }: PremiumFeaturesProps) {
+export default function PremiumFeatures({ className = '' }: any) {
+  // MONETIZATION COMPONENTS COMMENTED OUT - RETURN EMPTY DIV
+  return <div className={className}></div>;
+  
+  /* COMMENTED OUT - ORIGINAL MONETIZATION CODE
   const features = [
     {
       icon: <BarChart3 className="w-6 h-6" />,
@@ -112,4 +117,5 @@ export default function PremiumFeatures({ className = '' }: PremiumFeaturesProps
       </Card>
     </div>
   );
+  */
 }
