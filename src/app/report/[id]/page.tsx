@@ -14,6 +14,8 @@ import CareerCard from '@/components/report/CareerCard';
 import MajorCard from '@/components/report/MajorCard';
 import EntrepreneurCard from '@/components/report/EntrepreneurCard';
 import BackgroundBlobs from '@/components/BackgroundBlobs';
+import TargetedAds from '@/components/ads/TargetedAds';
+import PremiumFeatures from '@/components/premium/PremiumFeatures';
 import { AIReport } from '@/lib/openai';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -362,6 +364,28 @@ export default function ReportPage() {
                 ))}
               </div>
             </Card>
+          </section>
+
+          {/* Targeted Ads Section */}
+          <section>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <TargetedAds report={report} />
+            </motion.div>
+          </section>
+
+          {/* Premium Features Section */}
+          <section>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+            >
+              <PremiumFeatures />
+            </motion.div>
           </section>
 
           {/* Footer */}
