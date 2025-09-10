@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, ArrowLeft, CheckCircle, Star } from 'lucide-react';
+import { Download, ArrowLeft, Star } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -233,10 +233,10 @@ export default function ReportPage() {
                 🌟 Your Career Constellation
               </h2>
               <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                Like Master Oogway once said, "Yesterday is history, tomorrow is
-                a mystery, but today is a gift." These career paths align with
+                Like Master Oogway once said, &ldquo;Yesterday is history, tomorrow is
+                a mystery, but today is a gift.&rdquo; These career paths align with
                 your unique Ikigai - the intersection of what you love, what
-                you're good at, what you can be paid for, and what the world
+                you&apos;re good at, what you can be paid for, and what the world
                 needs.
               </p>
             </motion.div>
@@ -259,7 +259,7 @@ export default function ReportPage() {
                 📚 Your Learning Journey
               </h2>
               <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                "The journey of a thousand miles begins with a single step."
+                &ldquo;The journey of a thousand miles begins with a single step.&rdquo;
                 These fields of study will help you develop the skills and
                 knowledge needed to thrive in your chosen path. Each major is a
                 stepping stone toward your Ikigai.
@@ -286,8 +286,8 @@ export default function ReportPage() {
                     🚀 Your Innovation Garden
                   </h2>
                   <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                    "The best time to plant a tree was 20 years ago. The second
-                    best time is now." These entrepreneurial ideas are seeds of
+                    &ldquo;The best time to plant a tree was 20 years ago. The second
+                    best time is now.&rdquo; These entrepreneurial ideas are seeds of
                     possibility, waiting for your passion and dedication to help
                     them bloom into something extraordinary.
                   </p>
@@ -312,9 +312,9 @@ export default function ReportPage() {
                 🎯 Your Action Plan
               </h2>
               <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                "A journey of a thousand miles begins with a single step." These
+                &ldquo;A journey of a thousand miles begins with a single step.&rdquo; These
                 are your first steps toward living your Ikigai. Start with one,
-                then the next, and before you know it, you'll be walking the
+                then the next, and before you know it, you&apos;ll be walking the
                 path of your dreams.
               </p>
             </motion.div>

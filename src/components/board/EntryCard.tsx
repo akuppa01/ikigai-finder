@@ -26,7 +26,6 @@ export default function EntryCard({
   entry,
   isSelected,
   isEditing,
-  onSelect,
   onEdit,
   onDelete,
   onUpdate,

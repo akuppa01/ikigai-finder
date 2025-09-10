@@ -17,14 +17,14 @@ export function sanitizeInput(input: string): string {
   return input.trim().replace(/[<>]/g, '');
 }
 
-export function validateQuizResponse(quiz: any): boolean {
+export function validateQuizResponse(quiz: Record<string, unknown>): boolean {
   const requiredQuestions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'];
   return requiredQuestions.every(
     q => quiz[q] !== undefined && quiz[q] !== null
   );
 }
 
-export function validateEntries(entries: any[]): boolean {
+export function validateEntries(entries: unknown[]): boolean {
   if (!Array.isArray(entries)) return false;
   if (entries.length === 0) return false;
   if (entries.length > 100) return false; // Reasonable limit

@@ -4,7 +4,6 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { Entry, QuizResponse, UserProfile } from '@/lib/types';
 import {
   validateEmail,
-  validateTextInput,
   sanitizeInput,
   validateQuizResponse,
   validateEntries,
@@ -218,7 +217,7 @@ export async function POST(request: NextRequest) {
       reportId: report.id,
       report: reportData,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to generate report' },
       { status: 500 }

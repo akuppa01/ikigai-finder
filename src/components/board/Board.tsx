@@ -129,7 +129,6 @@ export default function Board() {
 
     // Provide visual feedback during drag over
     const activeId = active.id as string;
-    const overId = over.id as string;
 
     // Find source entry
     let sourceEntry: Entry | null = null;
