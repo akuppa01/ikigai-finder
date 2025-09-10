@@ -214,7 +214,18 @@ export default function QuizPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
+        
+        {/* Home Button - Top Left */}
+        <div className="relative z-10 p-6">
+          <Link href="/">
+            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
           <Card className="p-8 max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">

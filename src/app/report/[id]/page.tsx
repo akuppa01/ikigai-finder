@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, ArrowLeft, Star } from 'lucide-react';
+import { Download, ArrowLeft, Star, Home } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -100,7 +100,18 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
+        
+        {/* Home Button - Top Left */}
+        <div className="relative z-10 p-6">
+          <Link href="/">
+            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen -mt-20">
           <Card className="p-8 text-center bg-white/80 backdrop-blur-sm">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading your report...</p>
@@ -114,7 +125,18 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
+        
+        {/* Home Button - Top Left */}
+        <div className="relative z-10 p-6">
+          <Link href="/">
+            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
           <Card className="p-8 text-center bg-white/80 backdrop-blur-sm max-w-md">
             <div className="text-red-500 mb-4">
               <svg
@@ -155,8 +177,8 @@ export default function ReportPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <Link href="/">
-              <Button variant="ghost" className="gap-2">
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
+                <Home className="h-4 w-4" />
                 Back to Home
               </Button>
             </Link>
