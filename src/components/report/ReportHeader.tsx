@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Home, Download } from 'lucide-react';
-import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 
 interface ReportHeaderProps {
@@ -18,7 +17,7 @@ export default function ReportHeader({
     <div className="relative z-10 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <Link href="/">
+          <a href="/">
             <Button
               variant="ghost"
               className="gap-2 text-sage-700 hover:text-sage-800 hover:bg-sage-50 backdrop-blur-sm border border-sage-200"
@@ -26,7 +25,7 @@ export default function ReportHeader({
               <Home className="h-4 w-4" />
               Back to Home
             </Button>
-          </Link>
+          </a>
 
           <Button
             onClick={onDownloadPDF}
