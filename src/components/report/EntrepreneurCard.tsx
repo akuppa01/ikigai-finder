@@ -39,9 +39,9 @@ export default function EntrepreneurCard({
               </h4>
             </div>
             <div className="flex items-center gap-1">
-              <Badge className={cn('text-xs', capitalColors[idea.capital])}>
+              <Badge className={cn('text-xs', capitalColors[idea.capital || 'medium'])}>
                 <DollarSign className="h-2 w-2 mr-1" />
-                {idea.capital.toUpperCase()}
+                {(idea.capital || idea.investment || 'Medium').toUpperCase()}
               </Badge>
               <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-700 border-yellow-200">
                 #{index + 1}
@@ -50,7 +50,7 @@ export default function EntrepreneurCard({
           </div>
 
           {/* Why it fits */}
-          <p className="text-xs text-gray-600 leading-relaxed">{idea.why}</p>
+          <p className="text-xs text-gray-600 leading-relaxed">{idea.why || idea.description || idea.market}</p>
 
           {/* Steps */}
           <div className="space-y-2">

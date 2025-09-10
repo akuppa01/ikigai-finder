@@ -31,14 +31,25 @@ export default function CareerCard({ career, index }: CareerCardProps) {
           </div>
 
           {/* Why it fits */}
-          <p className="text-sm text-gray-600 leading-relaxed">{career.why}</p>
+          <p className="text-sm text-gray-600 leading-relaxed">{career.why || career.description}</p>
 
           {/* Timeline */}
-          <div className="flex items-center gap-2 text-xs text-gray-500 bg-white/60 px-2 py-1 rounded-full">
-            <Clock className="h-3 w-3" />
-            <span className="font-medium">Timeline:</span>
-            <span>{career.timeline}</span>
-          </div>
+          {career.timeline && (
+            <div className="flex items-center gap-2 text-xs text-gray-500 bg-white/60 px-2 py-1 rounded-full">
+              <Clock className="h-3 w-3" />
+              <span className="font-medium">Timeline:</span>
+              <span>{career.timeline}</span>
+            </div>
+          )}
+
+          {/* Salary and Growth */}
+          {(career.salary || career.growth) && (
+            <div className="flex items-center gap-2 text-xs text-gray-500 bg-white/60 px-2 py-1 rounded-full">
+              <span className="font-medium">Details:</span>
+              {career.salary && <span>Salary: {career.salary}</span>}
+              {career.growth && <span>Growth: {career.growth}</span>}
+            </div>
+          )}
 
           {/* Steps */}
           <div className="space-y-2">

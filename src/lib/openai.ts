@@ -7,20 +7,30 @@ export const openai = new OpenAI({
 // Types for AI report generation
 export interface CareerPath {
   title: string;
-  why: string;
-  timeline: string;
+  why?: string;
+  description?: string;
+  timeline?: string;
   steps: string[];
+  salary?: string;
+  growth?: string;
 }
 
 export interface Major {
   title: string;
-  why: string;
+  why?: string;
+  description?: string;
+  universities?: string[];
+  duration?: string;
+  prerequisites?: string[];
 }
 
 export interface EntrepreneurialIdea {
   title: string;
-  capital: 'low' | 'medium' | 'high';
-  why: string;
+  capital?: 'low' | 'medium' | 'high';
+  why?: string;
+  description?: string;
+  market?: string;
+  investment?: string;
   steps: string[];
 }
 

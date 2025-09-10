@@ -32,7 +32,7 @@ export default function MajorCard({ major, index }: MajorCardProps) {
             </Badge>
           </div>
 
-          <p className="text-xs text-gray-600 leading-relaxed">{major.why}</p>
+          <p className="text-xs text-gray-600 leading-relaxed">{major.why || major.description}</p>
         </div>
       </Card>
     </motion.div>
