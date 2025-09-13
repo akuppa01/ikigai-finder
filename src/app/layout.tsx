@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Lato, Merriweather } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const lato = Lato({
@@ -30,6 +31,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2291373051749863"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className={`${lato.variable} ${merriweather.variable} antialiased`}>
         {children}
       </body>
