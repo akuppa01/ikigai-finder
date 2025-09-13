@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: 'Ikigai Career Discovery',
   description:
     "Discover your purpose through the intersection of what you love, what you're good at, what you can be paid for, and what the world needs.",
+  verification: {
+    google: '0BEX4Rw0MLK2KXMICB-yE2_pBXjUTOJ8gz32oytKRZU',
+  },
 };
 
 export default function RootLayout({
