@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle, Home } from 'lucide-react';
 import Link from 'next/link';
+import PageTransition from '@/components/ui/page-transition';
+import LoadingScreen from '@/components/ui/loading-screen';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -207,10 +209,15 @@ export default function QuizPage() {
     }
   };
 
+  if (isGenerating) {
+    return <LoadingScreen message="Generating your personalized report..." />;
+  }
+
   if (isComplete && !showEmailModal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-        <BackgroundBlobs />
+      <PageTransition>
+        <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
+          <BackgroundBlobs />
         
         {/* Home Button - Top Left */}
         <div className="relative z-10 p-6">
@@ -236,32 +243,34 @@ export default function QuizPage() {
             </Button>
           </Card>
         </div>
-      </div>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-      <BackgroundBlobs />
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
+        <BackgroundBlobs />
 
       {/* Header */}
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-4 sm:p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Link href="/board">
-              <Button variant="ghost" className="gap-2">
+              <Button variant="ghost" className="gap-2 text-sm sm:text-base">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Board
               </Button>
             </Link>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               Question {currentQuestion + 1} of {questions.length}
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="w-full bg-gray-200 rounded-full h-2">
               <motion.div
                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
@@ -277,9 +286,9 @@ export default function QuizPage() {
       </div>
 
       {/* Questions */}
-      <div className="relative z-10 px-6 pb-6">
+      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="max-w-4xl mx-auto">
-          <div className="min-h-[400px] flex items-center justify-center">
+          <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestion}
@@ -314,12 +323,12 @@ export default function QuizPage() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center justify-between mt-4 sm:mt-6 gap-3">
             <Button
               variant="outline"
               onClick={handlePrevious}
               disabled={currentQuestion === 0}
-              className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold"
+              className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold text-sm sm:text-base flex-1 sm:flex-none"
             >
               <ArrowLeft className="h-4 w-4" />
               Previous
@@ -328,7 +337,7 @@ export default function QuizPage() {
             <Button
               onClick={handleNext}
               disabled={!canProceed}
-              className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
+              className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg text-sm sm:text-base flex-1 sm:flex-none"
             >
               {isLastQuestion ? 'Complete' : 'Next'}
               <ArrowRight className="h-4 w-4" />
@@ -420,6 +429,7 @@ export default function QuizPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </PageTransition>
   );
 }

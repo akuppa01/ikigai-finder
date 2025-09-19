@@ -83,7 +83,7 @@ export default function Board() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // Reduced distance for more responsive dragging
+        distance: 8, // Slightly increased for better mobile touch handling
       },
     }),
     useSensor(KeyboardSensor, {
@@ -242,7 +242,7 @@ export default function Board() {
         </div>
 
         {/* Mobile Stack */}
-        <div className="lg:hidden space-y-6">
+        <div className="lg:hidden space-y-4 sm:space-y-6">
           {(Object.keys(columnConfig) as ColumnKey[]).map(columnKey => {
             const config = columnConfig[columnKey];
             const columnEntries = columns[columnKey];

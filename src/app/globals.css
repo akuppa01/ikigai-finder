@@ -59,6 +59,25 @@
 }
 
 @layer utilities {
+  /* Mobile-specific improvements */
+  @media (max-width: 768px) {
+    /* Improve touch targets */
+    button, [role="button"], input, select, textarea {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Prevent zoom on input focus */
+    input, select, textarea {
+      font-size: 16px;
+    }
+    
+    /* Improve scrolling on mobile */
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
   /* Custom animations compatible with html2canvas */
   @keyframes spin {
     to {

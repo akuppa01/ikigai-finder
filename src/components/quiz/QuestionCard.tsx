@@ -42,14 +42,14 @@ export default function QuestionCard({
   };
 
   return (
-    <Card className="p-8 transition-all duration-300 ring-2 ring-blue-500 shadow-lg">
-      <div className="space-y-6">
+    <Card className="p-4 sm:p-8 transition-all duration-300 ring-2 ring-blue-500 shadow-lg">
+      <div className="space-y-4 sm:space-y-6">
         {/* Question Header */}
         <div className="text-center">
-          <div className="text-sm text-gray-500 mb-2">
+          <div className="text-xs sm:text-sm text-gray-500 mb-2">
             Question {questionNumber} of {totalQuestions}
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight">
             {question}
           </h2>
         </div>
@@ -60,17 +60,18 @@ export default function QuestionCard({
             <RadioGroup
               value={value?.toString() || ''}
               onValueChange={handleLikertChange}
-              className="space-y-3"
+              className="space-y-2 sm:space-y-3"
             >
               {likertOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-3">
+                <div key={option.value} className="flex items-center space-x-2 sm:space-x-3">
                   <RadioGroupItem
                     value={option.value.toString()}
                     id={`q${questionNumber}-${option.value}`}
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                   />
                   <Label
                     htmlFor={`q${questionNumber}-${option.value}`}
-                    className="flex-1 cursor-pointer text-sm"
+                    className="flex-1 cursor-pointer text-xs sm:text-sm"
                   >
                     {option.label}
                   </Label>
@@ -83,17 +84,18 @@ export default function QuestionCard({
             <RadioGroup
               value={value?.toString() || ''}
               onValueChange={handleMultipleChange}
-              className="space-y-3"
+              className="space-y-2 sm:space-y-3"
             >
               {options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-3">
+                <div key={index} className="flex items-center space-x-2 sm:space-x-3">
                   <RadioGroupItem
                     value={option}
                     id={`q${questionNumber}-${index}`}
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                   />
                   <Label
                     htmlFor={`q${questionNumber}-${index}`}
-                    className="flex-1 cursor-pointer text-sm"
+                    className="flex-1 cursor-pointer text-xs sm:text-sm"
                   >
                     {option}
                   </Label>
@@ -106,7 +108,7 @@ export default function QuestionCard({
             <select
               value={value || ''}
               onChange={e => onChange(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             >
               <option value="">Select age range</option>
               {options?.map((option, index) => (

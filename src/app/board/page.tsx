@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
+import PageTransition from '@/components/ui/page-transition';
+import LoadingScreen from '@/components/ui/loading-screen';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Board from '@/components/board/Board';
@@ -70,26 +72,31 @@ export default function BoardPage() {
     .flat()
     .filter(entry => entry.text.trim()).length;
 
+  if (isConfirming) {
+    return <LoadingScreen message="Processing your board..." />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-      <BackgroundBlobs />
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
+        <BackgroundBlobs />
 
       {/* Header */}
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
             <Link href="/">
-              <Button variant="ghost" className="gap-2">
+              <Button variant="ghost" className="gap-2 text-sm sm:text-base">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Home
               </Button>
             </Link>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
                 onClick={handleResetBoard}
-                className="gap-2"
+                className="gap-2 text-sm sm:text-base flex-1 sm:flex-none"
               >
                 <RotateCcw className="h-4 w-4" />
                 Reset
@@ -98,7 +105,7 @@ export default function BoardPage() {
               <Button
                 onClick={handleConfirmBoard}
                 disabled={isConfirming || totalEntries === 0}
-                className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm sm:text-base flex-1 sm:flex-none"
               >
                 <CheckCircle className="h-4 w-4" />
                 {isConfirming ? 'Processing...' : 'Confirm Board'}
@@ -107,16 +114,16 @@ export default function BoardPage() {
           </div>
 
           {/* Instructions */}
-          <Card className="p-6 mb-6 bg-white/80 backdrop-blur-sm">
+          <Card className="p-4 sm:p-6 mb-4 sm:mb-6 bg-white/80 backdrop-blur-sm">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 Build Your Ikigai
               </h1>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
                 Fill in each column with what matters to you. Drag items between
                 columns to copy them.
               </p>
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
+              <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
                   <span>What you love</span>
@@ -138,8 +145,8 @@ export default function BoardPage() {
           </Card>
 
           {/* Progress */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
               <span>Progress</span>
               <span>{totalEntries} items added</span>
             </div>
@@ -158,13 +165,14 @@ export default function BoardPage() {
       </div>
 
       {/* Board */}
-      <div className="relative z-10 px-6 pb-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="h-[600px] min-h-[500px]">
+      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="h-[500px] sm:h-[600px] min-h-[400px] sm:min-h-[500px]">
             <Board />
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   );
 }

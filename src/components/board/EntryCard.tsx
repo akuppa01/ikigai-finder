@@ -109,6 +109,13 @@ export default function EntryCard({
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Prevent default touch behavior that might interfere with dragging
+    if (isEditing) {
+      e.stopPropagation();
+    }
+  };
+
   return (
     <motion.div
       ref={setNodeRef}
@@ -123,17 +130,18 @@ export default function EntryCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       onClick={handleClick}
+      onTouchStart={handleTouchStart}
     >
       {/* Drag handle */}
       <div
         {...attributes}
         {...listeners}
         data-drag-handle
-        className="absolute left-3 top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-grab active:cursor-grabbing z-10 p-1 hover:bg-gray-100 rounded-md border border-transparent hover:border-gray-200"
+        className="absolute left-2 sm:left-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-grab active:cursor-grabbing z-10 p-1 hover:bg-gray-100 rounded-md border border-transparent hover:border-gray-200"
         onClick={e => e.stopPropagation()}
         title="Drag to move between columns"
       >
-        <GripVertical className="h-4 w-4 text-gray-500" />
+        <GripVertical className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
       </div>
 
       {/* Delete button */}
@@ -143,14 +151,14 @@ export default function EntryCard({
           e.stopPropagation();
           onDelete();
         }}
-        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-100 rounded-full z-10 border border-transparent hover:border-red-200"
+        className="absolute right-2 sm:right-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-100 rounded-full z-10 border border-transparent hover:border-red-200"
         title="Delete item"
       >
-        <X className="h-4 w-4 text-red-500" />
+        <X className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
       </button>
 
       {/* Content */}
-      <div className="p-3 pr-10 pl-10 min-h-[60px] flex items-center">
+      <div className="p-2 sm:p-3 pr-8 sm:pr-10 pl-8 sm:pl-10 min-h-[50px] sm:min-h-[60px] flex items-center">
         {isEditing ? (
           <textarea
             ref={inputRef}
@@ -158,12 +166,12 @@ export default function EntryCard({
             onChange={e => setLocalText(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
-            className="w-full resize-none border-none outline-none text-sm bg-transparent font-medium"
+            className="w-full resize-none border-none outline-none text-xs sm:text-sm bg-transparent font-medium"
             placeholder="Enter your text..."
             rows={2}
           />
         ) : (
-          <div className="w-full text-sm text-gray-700 whitespace-pre-wrap font-medium">
+          <div className="w-full text-xs sm:text-sm text-gray-700 whitespace-pre-wrap font-medium">
             {entry.text || (
               <span className="text-gray-400 italic">Click to edit...</span>
             )}
