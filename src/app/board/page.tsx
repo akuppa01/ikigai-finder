@@ -167,7 +167,7 @@ export default function BoardPage() {
       {/* Board */}
       <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="max-w-7xl mx-auto">
-          <div className="h-[500px] sm:h-[600px] min-h-[400px] sm:min-h-[500px]">
+          <div className="h-auto min-h-[400px] sm:h-[600px] sm:min-h-[500px]">
             <Board />
           </div>
         </div>

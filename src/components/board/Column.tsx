@@ -100,7 +100,7 @@ export default function Column({
     <motion.div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-all duration-300 shadow-lg',
+        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-all duration-300 shadow-lg',
         isOver && 'border-blue-400 bg-blue-50/40 shadow-2xl scale-[1.02]',
         'hover:shadow-xl hover:border-gray-300 hover:scale-[1.01]'
       )}

@@ -214,7 +214,7 @@ export default function Board() {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-full">
+      <div className="h-full lg:h-full">
         {/* Desktop Grid */}
         <div className="hidden lg:grid lg:grid-cols-4 gap-8 h-full">
           {(Object.keys(columnConfig) as ColumnKey[]).map(columnKey => {
@@ -242,7 +242,7 @@ export default function Board() {
         </div>
 
         {/* Mobile Stack */}
-        <div className="lg:hidden space-y-4 sm:space-y-6">
+        <div className="lg:hidden space-y-4 sm:space-y-6 pb-8">
           {(Object.keys(columnConfig) as ColumnKey[]).map(columnKey => {
             const config = columnConfig[columnKey];
             const columnEntries = columns[columnKey];
