@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { X, GripVertical } from 'lucide-react';
@@ -22,7 +21,7 @@ interface EntryCardProps {
   onNavigatePrevious?: () => void;
 }
 
-export default function EntryCard({
+const EntryCard = memo(function EntryCard({
   entry,
   isSelected,
   isEditing,
@@ -34,6 +33,16 @@ export default function EntryCard({
   onNavigateNext,
   onNavigatePrevious,
 }: EntryCardProps) {
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  return (
+    prevProps.entry.id === nextProps.entry.id &&
+    prevProps.entry.text === nextProps.entry.text &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.columnColor === nextProps.columnColor
+  );
+});
   const [localText, setLocalText] = useState(entry.text);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -117,18 +126,18 @@ export default function EntryCard({
   };
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group relative bg-white rounded-xl shadow-md border-2 border-gray-200/60 transition-all duration-300',
+        // Removed motion.div animations (initial/animate/exit) that cause re-renders
+        // Removed hover:scale-[1.02] (triggers layout recalculations)
+        // Changed transition-all to specific properties only
+        'group relative bg-white rounded-xl shadow-md border-2 border-gray-200/60 transition-[box-shadow,border-color,opacity] duration-200',
         isSelected && 'ring-2 ring-blue-500 ring-offset-2 shadow-lg',
-        isDragging && 'opacity-70 scale-110 shadow-2xl',
-        'hover:shadow-lg hover:border-gray-300 hover:scale-[1.02]'
+        isDragging && 'opacity-70 shadow-2xl',
+        'hover:shadow-lg hover:border-gray-300'
       )}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
     >
@@ -137,7 +146,7 @@ export default function EntryCard({
         {...attributes}
         {...listeners}
         data-drag-handle
-        className="absolute left-2 sm:left-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-grab active:cursor-grabbing z-10 p-1 hover:bg-gray-100 rounded-md border border-transparent hover:border-gray-200"
+        className="absolute left-2 sm:left-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-10 p-1 hover:bg-gray-100 rounded-md border border-transparent hover:border-gray-200"
         onClick={e => e.stopPropagation()}
         title="Drag to move between columns"
       >
@@ -151,7 +160,7 @@ export default function EntryCard({
           e.stopPropagation();
           onDelete();
         }}
-        className="absolute right-2 sm:right-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-100 rounded-full z-10 border border-transparent hover:border-red-200"
+        className="absolute right-2 sm:right-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-100 rounded-full z-10 border border-transparent hover:border-red-200"
         title="Delete item"
       >
         <X className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
@@ -184,6 +193,8 @@ export default function EntryCard({
         className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
         style={{ backgroundColor: columnColor }}
       />
-    </motion.div>
+    </div>
   );
-}
+});
+
+export default EntryCard;

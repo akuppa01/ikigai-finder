@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -55,30 +55,30 @@ export default function Board() {
     moveEntry,
   } = useBoardStore();
 
-  // Navigation functions
-  const navigateToNext = () => {
+  // Memoize navigation functions to prevent re-creation on every render
+  const allEntries = useMemo(() => Object.values(columns).flat(), [columns]);
+
+  const navigateToNext = useCallback(() => {
     if (!editingEntryId) return;
 
-    const allEntries = Object.values(columns).flat();
     const currentIndex = allEntries.findIndex(e => e.id === editingEntryId);
 
     if (currentIndex < allEntries.length - 1) {
       const nextEntry = allEntries[currentIndex + 1];
       setEditingEntry(nextEntry.id);
     }
-  };
+  }, [editingEntryId, allEntries, setEditingEntry]);
 
-  const navigateToPrevious = () => {
+  const navigateToPrevious = useCallback(() => {
     if (!editingEntryId) return;
 
-    const allEntries = Object.values(columns).flat();
     const currentIndex = allEntries.findIndex(e => e.id === editingEntryId);
 
     if (currentIndex > 0) {
       const prevEntry = allEntries[currentIndex - 1];
       setEditingEntry(prevEntry.id);
     }
-  };
+  }, [editingEntryId, allEntries, setEditingEntry]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -122,36 +122,12 @@ export default function Board() {
     setSelectedEntry(active.id as string);
   };
 
+  // Optimized: Throttle drag over handler to reduce re-renders
+  // The visual feedback is already handled by Column's isOver state from useDroppable
+  // No need to do expensive lookups on every drag event
   const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    // Provide visual feedback during drag over
-    const activeId = active.id as string;
-
-    // Find source entry
-    let sourceEntry: Entry | null = null;
-    for (const columnKey in columns) {
-      const column = columns[columnKey as ColumnKey];
-      const entry = column.find(e => e.id === activeId);
-      if (entry) {
-        sourceEntry = entry;
-        break;
-      }
-    }
-
-    if (!sourceEntry) return;
-
-    // Handle dragging over a column
-    if (over.data.current?.type === 'column') {
-      const targetColumn = over.data.current.columnKey as ColumnKey;
-
-      // Only show feedback if dragging to a different column
-      if (sourceEntry.column !== targetColumn) {
-        // Visual feedback is handled by the Column component's isOver state
-      }
-    }
+    // Minimal processing - visual feedback handled by dnd-kit's isOver state
+    // This prevents expensive column lookups on every mouse move during drag
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -194,7 +170,8 @@ export default function Board() {
     setSelectedEntry(null);
   };
 
-  const getActiveEntry = () => {
+  // Memoize active entry lookup to prevent recalculation on every render
+  const activeEntry = useMemo(() => {
     if (!selectedEntryId) return null;
 
     for (const columnKey in columns) {
@@ -203,9 +180,7 @@ export default function Board() {
       if (entry) return entry;
     }
     return null;
-  };
-
-  const activeEntry = getActiveEntry();
+  }, [selectedEntryId, columns]);
 
   return (
     <DndContext

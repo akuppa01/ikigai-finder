@@ -190,9 +190,24 @@ export default function QuizPage() {
       });
 
       if (!reportResponse.ok) {
-        const errorData = await reportResponse.json();
-        console.error('Report generation error:', errorData);
-        const errorMessage = errorData.error || `HTTP ${reportResponse.status}: ${reportResponse.statusText}`;
+        let errorData;
+        try {
+          errorData = await reportResponse.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          errorData = {
+            error: `HTTP ${reportResponse.status}: ${reportResponse.statusText}`,
+          };
+        }
+        console.error('Report generation error:', {
+          status: reportResponse.status,
+          statusText: reportResponse.statusText,
+          errorData,
+          url: reportResponse.url,
+        });
+        const errorMessage =
+          errorData.error ||
+          `HTTP ${reportResponse.status}: ${reportResponse.statusText}`;
         throw new Error(errorMessage);
       }
 
@@ -202,7 +217,8 @@ export default function QuizPage() {
       window.location.href = `/report/${reportId}`;
     } catch (error) {
       console.error('Error generating report:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       alert(errorMessage);
     } finally {
       setIsGenerating(false);
@@ -218,31 +234,37 @@ export default function QuizPage() {
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
           <BackgroundBlobs />
-        
-        {/* Home Button - Top Left */}
-        <div className="relative z-10 p-6">
-          <Link href="/">
-            <Button variant="ghost" className="gap-2 text-gray-600 hover:text-gray-900">
-              <Home className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
 
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
-          <Card className="p-8 max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Quiz Complete!
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Ready to generate your personalized Ikigai report?
-            </p>
-            <Button onClick={() => setShowEmailModal(true)} className="w-full">
-              Generate Report
-            </Button>
-          </Card>
-        </div>
+          {/* Home Button - Top Left */}
+          <div className="relative z-10 p-6">
+            <Link href="/">
+              <Button
+                variant="ghost"
+                className="gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <Home className="h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </div>
+
+          <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
+            <Card className="p-8 max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Quiz Complete!
+              </h1>
+              <p className="text-gray-600 mb-6">
+                Ready to generate your personalized Ikigai report?
+              </p>
+              <Button
+                onClick={() => setShowEmailModal(true)}
+                className="w-full"
+              >
+                Generate Report
+              </Button>
+            </Card>
+          </div>
         </div>
       </PageTransition>
     );
@@ -253,182 +275,182 @@ export default function QuizPage() {
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
         <BackgroundBlobs />
 
-      {/* Header */}
-      <div className="relative z-10 p-4 sm:p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <Link href="/board">
-              <Button variant="ghost" className="gap-2 text-sm sm:text-base">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Board
-              </Button>
-            </Link>
-
-            <div className="text-xs sm:text-sm text-gray-600">
-              Question {currentQuestion + 1} of {questions.length}
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mb-6 sm:mb-8">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{
-                  width: `${((currentQuestion + 1) / questions.length) * 100}%`,
-                }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Questions */}
-      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="w-full"
-              >
-                <QuestionCard
-                  question={questions[currentQuestion].question}
-                  type={questions[currentQuestion].type}
-                  options={questions[currentQuestion].options}
-                  value={
-                    responses[
-                      questions[currentQuestion].id as keyof typeof responses
-                    ]
-                  }
-                  onChange={value =>
-                    setResponse(
-                      questions[currentQuestion].id as keyof typeof responses,
-                      value
-                    )
-                  }
-                  isActive={true}
-                  isBlurred={false}
-                  questionNumber={currentQuestion + 1}
-                  totalQuestions={questions.length}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-4 sm:mt-6 gap-3">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-              className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold text-sm sm:text-base flex-1 sm:flex-none"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Previous
-            </Button>
-
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed}
-              className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg text-sm sm:text-base flex-1 sm:flex-none"
-            >
-              {isLastQuestion ? 'Complete' : 'Next'}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Email Modal */}
-      <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
-        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
-          <DialogHeader className="text-center pb-4">
-            <DialogTitle className="text-2xl font-bold text-gray-900">
-              Generate Your Report
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 mt-2">
-              Enter your details to receive your personalized Ikigai career
-              report.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="text-sm font-medium text-gray-700"
-              >
-                Name (optional)
-              </Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Your name"
-                className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-sm font-medium text-gray-700"
-              >
-                Email *
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-                className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-              />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowEmailModal(false)}
-                className="flex-1 h-11 border-gray-200 hover:border-gray-300 transition-all duration-200"
-              >
-                Cancel
-              </Button>
-            <div className="flex flex-col gap-3">
-              <Button
-                onClick={handleGenerateReport}
-                disabled={isGenerating || !email.trim()}
-                className="w-full h-12 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 transition-all duration-200 text-white font-semibold shadow-lg"
-              >
-                {isGenerating ? (
-                  <div className="flex items-center gap-2">
-                    <LoadingSpinner size="sm" text="" />
-                    <span>Generating...</span>
-                  </div>
-                ) : (
-                  'Generate Report'
-                )}
-              </Button>
-              
-              <Link href="/">
-                <Button
-                  variant="outline"
-                  className="w-full h-10 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                >
-                  <Home className="w-4 h-4 mr-2" />
-                  Back to Home
+        {/* Header */}
+        <div className="relative z-10 p-4 sm:p-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <Link href="/board">
+                <Button variant="ghost" className="gap-2 text-sm sm:text-base">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Board
                 </Button>
               </Link>
+
+              <div className="text-xs sm:text-sm text-gray-600">
+                Question {currentQuestion + 1} of {questions.length}
+              </div>
             </div>
+
+            {/* Progress Bar */}
+            <div className="mb-6 sm:mb-8">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <motion.div
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{
+                    width: `${((currentQuestion + 1) / questions.length) * 100}%`,
+                  }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+
+        {/* Questions */}
+        <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuestion}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="w-full"
+                >
+                  <QuestionCard
+                    question={questions[currentQuestion].question}
+                    type={questions[currentQuestion].type}
+                    options={questions[currentQuestion].options}
+                    value={
+                      responses[
+                        questions[currentQuestion].id as keyof typeof responses
+                      ]
+                    }
+                    onChange={value =>
+                      setResponse(
+                        questions[currentQuestion].id as keyof typeof responses,
+                        value
+                      )
+                    }
+                    isActive={true}
+                    isBlurred={false}
+                    questionNumber={currentQuestion + 1}
+                    totalQuestions={questions.length}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between mt-4 sm:mt-6 gap-3">
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={currentQuestion === 0}
+                className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold text-sm sm:text-base flex-1 sm:flex-none"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Previous
+              </Button>
+
+              <Button
+                onClick={handleNext}
+                disabled={!canProceed}
+                className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg text-sm sm:text-base flex-1 sm:flex-none"
+              >
+                {isLastQuestion ? 'Complete' : 'Next'}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Email Modal */}
+        <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
+          <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
+            <DialogHeader className="text-center pb-4">
+              <DialogTitle className="text-2xl font-bold text-gray-900">
+                Generate Your Report
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 mt-2">
+                Enter your details to receive your personalized Ikigai career
+                report.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="name"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Name (optional)
+                </Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Your name"
+                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Email *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEmailModal(false)}
+                  className="flex-1 h-11 border-gray-200 hover:border-gray-300 transition-all duration-200"
+                >
+                  Cancel
+                </Button>
+                <div className="flex flex-col gap-3">
+                  <Button
+                    onClick={handleGenerateReport}
+                    disabled={isGenerating || !email.trim()}
+                    className="w-full h-12 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 transition-all duration-200 text-white font-semibold shadow-lg"
+                  >
+                    {isGenerating ? (
+                      <div className="flex items-center gap-2">
+                        <LoadingSpinner size="sm" text="" />
+                        <span>Generating...</span>
+                      </div>
+                    ) : (
+                      'Generate Report'
+                    )}
+                  </Button>
+
+                  <Link href="/">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                    >
+                      <Home className="w-4 h-4 mr-2" />
+                      Back to Home
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </PageTransition>
   );

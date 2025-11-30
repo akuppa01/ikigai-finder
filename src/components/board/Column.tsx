@@ -1,12 +1,12 @@
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
-import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Entry, ColumnKey } from '@/lib/types';
 import { useBoardStore } from '@/hooks/useBoardStore';
 import EntryCard from './EntryCard';
 import { cn } from '@/lib/utils';
+import { memo } from 'react';
 
 interface ColumnProps {
   columnKey: ColumnKey;
@@ -41,7 +41,7 @@ const columnConfig = {
   },
 };
 
-export default function Column({
+const Column = memo(function Column({
   columnKey,
   entries,
   color,
@@ -56,15 +56,15 @@ export default function Column({
     },
   });
 
-  const {
-    selectedEntryId,
-    editingEntryId,
-    addEntry,
-    updateEntry,
-    deleteEntry,
-    setSelectedEntry,
-    setEditingEntry,
-  } = useBoardStore();
+  // Only subscribe to the specific values we need from the store
+  // This prevents re-renders when unrelated store values change
+  const selectedEntryId = useBoardStore(state => state.selectedEntryId);
+  const editingEntryId = useBoardStore(state => state.editingEntryId);
+  const addEntry = useBoardStore(state => state.addEntry);
+  const updateEntry = useBoardStore(state => state.updateEntry);
+  const deleteEntry = useBoardStore(state => state.deleteEntry);
+  const setSelectedEntry = useBoardStore(state => state.setSelectedEntry);
+  const setEditingEntry = useBoardStore(state => state.setEditingEntry);
 
   const config = columnConfig[columnKey];
   const isAtLimit = entries.length >= 25;
@@ -97,16 +97,16 @@ export default function Column({
   };
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-all duration-300 shadow-lg',
-        isOver && 'border-blue-400 bg-blue-50/40 shadow-2xl scale-[1.02]',
-        'hover:shadow-xl hover:border-gray-300 hover:scale-[1.01]'
+        // Removed backdrop-blur-sm (GPU-intensive) and replaced with solid background
+        // Removed scale transforms on hover (trigger layout recalculations)
+        // Changed transition-all to specific properties only
+        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white/98 rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-[box-shadow,border-color] duration-200 shadow-lg',
+        isOver && 'border-blue-400 bg-blue-50/40 shadow-xl',
+        'hover:shadow-lg hover:border-gray-300'
       )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       {/* Header */}
       <div className="p-3 sm:p-4 border-b-2 border-gray-100 bg-gradient-to-r from-gray-50 to-white">
@@ -156,7 +156,7 @@ export default function Column({
           onClick={handleAddEntry}
           disabled={isAtLimit}
           className={cn(
-            'w-full flex items-center justify-center gap-2 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl transition-all duration-200',
+            'w-full flex items-center justify-center gap-2 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl transition-[border-color,background-color] duration-200',
             isAtLimit
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
               : 'bg-white border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600'
@@ -168,6 +168,8 @@ export default function Column({
           </span>
         </button>
       </div>
-    </motion.div>
+    </div>
   );
-}
+});
+
+export default Column;

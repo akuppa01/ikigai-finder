@@ -1,65 +1,30 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
+/**
+ * Optimized BackgroundBlobs - Static version to prevent GPU overload
+ * Removed infinite animations and heavy blur effects that were causing
+ * Chrome rendering issues and GPU overheating
+ */
 export default function BackgroundBlobs() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Use static gradients instead of animated blurs to prevent GPU overload
+  // This provides visual interest without continuous repainting
+  if (!mounted) return null;
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      <motion.div
-        className="absolute top-20 left-10 w-32 h-32 bg-orange-300/20 rounded-full blur-xl"
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      <motion.div
-        className="absolute top-40 right-20 w-24 h-24 bg-pink-300/20 rounded-full blur-xl"
-        animate={{
-          x: [0, -25, 0],
-          y: [0, 15, 0],
-          scale: [1, 0.9, 1],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1,
-        }}
-      />
-      <motion.div
-        className="absolute bottom-32 left-1/4 w-40 h-40 bg-yellow-300/15 rounded-full blur-xl"
-        animate={{
-          x: [0, 20, 0],
-          y: [0, -10, 0],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 2,
-        }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-1/3 w-28 h-28 bg-red-300/20 rounded-full blur-xl"
-        animate={{
-          x: [0, -15, 0],
-          y: [0, 25, 0],
-          scale: [1, 0.8, 1],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 3,
-        }}
-      />
+      {/* Static gradient overlays - no animations, no blur filters */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-orange-300/10 rounded-full" />
+      <div className="absolute top-40 right-20 w-24 h-24 bg-pink-300/10 rounded-full" />
+      <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-yellow-300/8 rounded-full" />
+      <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-red-300/10 rounded-full" />
     </div>
   );
 }

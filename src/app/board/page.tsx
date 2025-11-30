@@ -114,7 +114,7 @@ export default function BoardPage() {
           </div>
 
           {/* Instructions */}
-          <Card className="p-4 sm:p-6 mb-4 sm:mb-6 bg-white/80 backdrop-blur-sm">
+          <Card className="p-4 sm:p-6 mb-4 sm:mb-6 bg-white/95">
             <div className="text-center">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 Build Your Ikigai
