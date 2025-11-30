@@ -91,7 +91,7 @@ export default function HomePage() {
               onClick={() => setShowAuth(true)}
               variant="outline"
               size="sm"
-              className="bg-white/80 backdrop-blur-sm border-sage-300 text-sage-700 hover:bg-sage-50 text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="bg-white border-sage-300 text-sage-700 hover:bg-sage-50 text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               Sign In
             </Button>
@@ -196,7 +196,7 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: index * 0.2 }}
                 viewport={{ once: true }}
               >
-                <Card className="p-6 sm:p-8 text-center bg-white/90 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-sage-200 rounded-xl">
+                <Card className="p-6 sm:p-8 text-center bg-white hover:shadow-lg transition-[box-shadow] duration-200 border-sage-200 rounded-xl">
                   <div
                     className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center text-white font-bold text-lg sm:text-xl mx-auto mb-4 sm:mb-6`}
                   >
@@ -224,7 +224,7 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <Card className="p-6 sm:p-12 bg-white/90 backdrop-blur-sm border-sage-200 rounded-xl">
+            <Card className="p-6 sm:p-12 bg-white border-sage-200 rounded-xl shadow-md">
               <h2 className="text-2xl sm:text-4xl font-bold text-sage-800 mb-4 sm:mb-6 font-serif">
                 Ready to Find Your Purpose?
               </h2>

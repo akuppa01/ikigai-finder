@@ -243,10 +243,10 @@ export default function Board() {
         </div>
       </div>
 
-      {/* Drag Overlay */}
+      {/* Drag Overlay - Optimized with will-change for GPU acceleration */}
       <DragOverlay>
         {activeEntry ? (
-          <div className="opacity-90">
+          <div className="opacity-90" style={{ willChange: 'transform' }}>
             <EntryCard
               entry={activeEntry}
               isSelected={true}

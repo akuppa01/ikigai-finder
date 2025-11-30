@@ -53,10 +53,12 @@ const EntryCard = memo(
       disabled: isEditing,
     });
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    // Optimize for drag operations - use GPU acceleration
+    ...(isDragging && { willChange: 'transform' }),
+  };
 
     useEffect(() => {
       if (isEditing && inputRef.current) {

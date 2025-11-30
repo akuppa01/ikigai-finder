@@ -249,7 +249,7 @@ export default function QuizPage() {
           </div>
 
           <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
-            <Card className="p-8 max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm">
+            <Card className="p-8 max-w-md mx-auto text-center bg-white shadow-md">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Quiz Complete!
@@ -370,7 +370,7 @@ export default function QuizPage() {
 
         {/* Email Modal */}
         <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
-          <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
+          <DialogContent className="sm:max-w-md bg-white border-0 shadow-2xl">
             <DialogHeader className="text-center pb-4">
               <DialogTitle className="text-2xl font-bold text-gray-900">
                 Generate Your Report

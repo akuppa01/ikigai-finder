@@ -103,8 +103,10 @@ const Column = memo(function Column({
         // Removed backdrop-blur-sm (GPU-intensive) and replaced with solid background
         // Removed scale transforms on hover (trigger layout recalculations)
         // Changed transition-all to specific properties only
-        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white/98 rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-[box-shadow,border-color] duration-200 shadow-lg',
-        isOver && 'border-blue-400 bg-blue-50/40 shadow-xl',
+        // Changed bg-white/98 to bg-white to reduce compositing layers
+        // Changed bg-blue-50/40 to bg-blue-50 to avoid opacity compositing
+        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-[box-shadow,border-color] duration-200 shadow-lg',
+        isOver && 'border-blue-400 bg-blue-50 shadow-xl',
         'hover:shadow-lg hover:border-gray-300'
       )}
     >
@@ -170,6 +172,22 @@ const Column = memo(function Column({
       </div>
     </div>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  // Only re-render if entries actually changed (by reference or content)
+  if (prevProps.columnKey !== nextProps.columnKey) return false;
+  if (prevProps.color !== nextProps.color) return false;
+  if (prevProps.entries.length !== nextProps.entries.length) return false;
+  
+  // Check if any entry changed
+  for (let i = 0; i < prevProps.entries.length; i++) {
+    if (prevProps.entries[i].id !== nextProps.entries[i].id ||
+        prevProps.entries[i].text !== nextProps.entries[i].text) {
+      return false;
+    }
+  }
+  
+  return true; // Props are equal, skip re-render
 });
 
 export default Column;

@@ -109,7 +109,7 @@ export default function ReportPage() {
           </div>
 
           <div className="relative z-10 flex items-center justify-center min-h-screen p-4 sm:p-6 -mt-20">
-            <Card className="p-6 sm:p-8 text-center bg-white/80 backdrop-blur-sm max-w-md">
+            <Card className="p-6 sm:p-8 text-center bg-white max-w-md shadow-md">
               <div className="text-red-500 mb-4">
                 <svg
                   className="h-10 w-10 sm:h-12 sm:w-12 mx-auto"
@@ -144,12 +144,12 @@ export default function ReportPage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-sage-50 via-moss-50 to-earth-50 relative overflow-hidden">
-        {/* Animated Background */}
+        {/* Static Background - No blur or animations to prevent GPU overload */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sage-100/30 via-moss-100/30 to-earth-100/30"></div>
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-200/40 to-moss-200/40 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-200/40 to-gold-200/40 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-moss-200/30 to-sage-200/30 rounded-full blur-2xl animate-pulse delay-500"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-200/40 to-moss-200/40 rounded-full"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-200/40 to-gold-200/40 rounded-full"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-moss-200/30 to-sage-200/30 rounded-full"></div>
         </div>
 
         {/* Header */}
@@ -161,7 +161,7 @@ export default function ReportPage() {
         {/* Report Metadata */}
         <div className="relative z-10 px-4 sm:px-6 mb-6 sm:mb-8">
           <div className="max-w-7xl mx-auto">
-            <Card className="p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border-sage-200">
+            <Card className="p-4 sm:p-6 bg-white rounded-xl border-sage-200 shadow-md">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
                 <Badge
                   variant="secondary"
@@ -371,11 +371,10 @@ export default function ReportPage() {
           </section> */}
 
             {/* Footer */}
-            <Card className="p-6 sm:p-8 text-center bg-white/90 backdrop-blur-sm rounded-xl border-sage-200">
+            <Card className="p-6 sm:p-8 text-center bg-white rounded-xl border-sage-200 shadow-md">
               <div className="flex items-center justify-center mb-4 sm:mb-6">
                 <div className="relative">
-                  <NinjaStar size={50} className="sm:w-16 sm:h-16" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-sage-400 to-moss-400 rounded-full blur-lg opacity-30"></div>
+                  <NinjaStar size={50} className="sm:w-16 sm:h-16" animated={false} />
                 </div>
               </div>
               <p className="text-earth-600 mb-3 sm:mb-4 font-sans text-base sm:text-lg">

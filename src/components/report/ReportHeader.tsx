@@ -20,7 +20,7 @@ export default function ReportHeader({
           <a href="/">
             <Button
               variant="ghost"
-              className="gap-2 text-sage-700 hover:text-sage-800 hover:bg-sage-50 backdrop-blur-sm border border-sage-200"
+              className="gap-2 text-sage-700 hover:text-sage-800 hover:bg-sage-50 border border-sage-200"
             >
               <Home className="h-4 w-4" />
               Back to Home

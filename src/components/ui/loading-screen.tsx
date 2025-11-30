@@ -10,23 +10,25 @@ interface LoadingScreenProps {
   className?: string;
 }
 
-export default function LoadingScreen({ 
-  message = 'Loading...', 
+export default function LoadingScreen({
+  message = 'Loading...',
   showSpinner = true,
-  className = '' 
+  className = '',
 }: LoadingScreenProps) {
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-sage-50 via-moss-50 to-earth-50 relative overflow-hidden ${className}`}>
-      {/* Background Blobs */}
+    <div
+      className={`min-h-screen bg-gradient-to-br from-sage-50 via-moss-50 to-earth-50 relative overflow-hidden ${className}`}
+    >
+      {/* Background Blobs - Static gradients only, no blur or animations */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sage-100/30 via-moss-100/30 to-earth-100/30"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-200/40 to-moss-200/40 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-200/40 to-gold-200/40 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-sage-200/40 to-moss-200/40 rounded-full"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-earth-200/40 to-gold-200/40 rounded-full"></div>
       </div>
 
       {/* Loading Content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
-        <Card className="p-8 sm:p-12 text-center bg-white/90 backdrop-blur-sm rounded-xl border-sage-200 max-w-md mx-auto">
+        <Card className="p-8 sm:p-12 text-center bg-white rounded-xl border-sage-200 max-w-md mx-auto shadow-lg">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
