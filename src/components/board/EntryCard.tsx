@@ -33,16 +33,6 @@ const EntryCard = memo(function EntryCard({
   onNavigateNext,
   onNavigatePrevious,
 }: EntryCardProps) {
-}, (prevProps, nextProps) => {
-  // Custom comparison to prevent unnecessary re-renders
-  return (
-    prevProps.entry.id === nextProps.entry.id &&
-    prevProps.entry.text === nextProps.entry.text &&
-    prevProps.isSelected === nextProps.isSelected &&
-    prevProps.isEditing === nextProps.isEditing &&
-    prevProps.columnColor === nextProps.columnColor
-  );
-});
   const [localText, setLocalText] = useState(entry.text);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -191,10 +181,3 @@ const EntryCard = memo(function EntryCard({
       {/* Column color indicator */}
       <div
         className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
-        style={{ backgroundColor: columnColor }}
-      />
-    </div>
-  );
-});
-
-export default EntryCard;
