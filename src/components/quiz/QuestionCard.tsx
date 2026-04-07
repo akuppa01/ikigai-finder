@@ -1,6 +1,5 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
@@ -14,6 +13,7 @@ interface QuestionCardProps {
   isBlurred: boolean;
   questionNumber: number;
   totalQuestions: number;
+  reflection?: string;
 }
 
 const likertOptions = [
@@ -24,102 +24,130 @@ const likertOptions = [
   { value: 5, label: 'Strongly Agree' },
 ];
 
+const multipleLabels: Record<string, string> = {
+  lead: 'Lead — I take initiative and guide others',
+  collaborate: 'Collaborate — I work best alongside a team',
+  independent: 'Independent — I prefer working alone',
+  student: 'Student — currently in education',
+  professional: 'Professional — currently working',
+  low: 'Low — minimal time or money available',
+  medium: 'Medium — willing to invest moderately',
+  high: 'High — committed to serious investment',
+};
+
 export default function QuestionCard({
   question,
   type,
   options,
   value,
   onChange,
-  questionNumber,
-  totalQuestions,
+  reflection,
 }: QuestionCardProps) {
-  const handleLikertChange = (value: string) => {
-    onChange(parseInt(value));
-  };
-
-  const handleMultipleChange = (value: string) => {
-    onChange(value);
-  };
-
   return (
-    <Card className="p-4 sm:p-8 transition-all duration-300 ring-2 ring-blue-500 shadow-lg">
-      <div className="space-y-4 sm:space-y-6">
-        {/* Question Header */}
-        <div className="text-center">
-          <div className="text-xs sm:text-sm text-gray-500 mb-2">
-            Question {questionNumber} of {totalQuestions}
-          </div>
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight">
-            {question}
-          </h2>
-        </div>
+    <div className="w-full">
+      {/* Question */}
+      <h2 className="font-serif text-xl sm:text-2xl font-light text-ink-900 leading-snug mb-2 max-w-xl">
+        {question}
+      </h2>
 
-        {/* Answer Options */}
-        <div className="max-w-md mx-auto">
-          {type === 'likert' && (
-            <RadioGroup
-              value={value?.toString() || ''}
-              onValueChange={handleLikertChange}
-              className="space-y-2 sm:space-y-3"
-            >
-              {likertOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-2 sm:space-x-3">
-                  <RadioGroupItem
-                    value={option.value.toString()}
-                    id={`q${questionNumber}-${option.value}`}
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                  />
-                  <Label
-                    htmlFor={`q${questionNumber}-${option.value}`}
-                    className="flex-1 cursor-pointer text-xs sm:text-sm"
-                  >
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          )}
+      {/* Reflection prompt */}
+      {reflection && (
+        <p className="text-xs text-ink-400 italic mb-8 leading-relaxed max-w-lg">
+          {reflection}
+        </p>
+      )}
 
-          {type === 'multiple' && (
-            <RadioGroup
-              value={value?.toString() || ''}
-              onValueChange={handleMultipleChange}
-              className="space-y-2 sm:space-y-3"
-            >
-              {options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 sm:space-x-3">
-                  <RadioGroupItem
-                    value={option}
-                    id={`q${questionNumber}-${index}`}
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                  />
-                  <Label
-                    htmlFor={`q${questionNumber}-${index}`}
-                    className="flex-1 cursor-pointer text-xs sm:text-sm"
-                  >
-                    {option}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          )}
+      {/* Answer options */}
+      <div className="max-w-md">
+        {type === 'likert' && (
+          <RadioGroup
+            value={value?.toString() || ''}
+            onValueChange={v => onChange(parseInt(v))}
+            className="space-y-0"
+          >
+            {likertOptions.map(option => (
+              <label
+                key={option.value}
+                htmlFor={`opt-${option.value}`}
+                className={`flex items-center gap-4 py-3 px-4 cursor-pointer border-b border-ink-100 hover:bg-parchment-100 transition-colors duration-150 group ${
+                  value?.toString() === option.value.toString()
+                    ? 'bg-crimson-50 border-b-crimson-200'
+                    : ''
+                }`}
+              >
+                <RadioGroupItem
+                  value={option.value.toString()}
+                  id={`opt-${option.value}`}
+                  className="border-ink-300 text-crimson-600 data-[state=checked]:border-crimson-600"
+                />
+                <span className={`text-sm font-sans flex-1 transition-colors duration-150 ${
+                  value?.toString() === option.value.toString()
+                    ? 'text-crimson-800 font-medium'
+                    : 'text-ink-600 group-hover:text-ink-900'
+                }`}>
+                  {option.label}
+                </span>
+                <span className={`text-[10px] w-4 text-right tabular-nums ${
+                  value?.toString() === option.value.toString()
+                    ? 'text-crimson-500'
+                    : 'text-ink-300'
+                }`}>
+                  {option.value}
+                </span>
+              </label>
+            ))}
+          </RadioGroup>
+        )}
 
-          {type === 'dropdown' && (
+        {type === 'multiple' && (
+          <RadioGroup
+            value={value?.toString() || ''}
+            onValueChange={v => onChange(v)}
+            className="space-y-0"
+          >
+            {options?.map((option, i) => (
+              <label
+                key={i}
+                htmlFor={`opt-${option}`}
+                className={`flex items-center gap-4 py-3 px-4 cursor-pointer border-b border-ink-100 hover:bg-parchment-100 transition-colors duration-150 group ${
+                  value === option ? 'bg-crimson-50 border-b-crimson-200' : ''
+                }`}
+              >
+                <RadioGroupItem
+                  value={option}
+                  id={`opt-${option}`}
+                  className="border-ink-300 text-crimson-600 data-[state=checked]:border-crimson-600"
+                />
+                <span className={`text-sm font-sans flex-1 transition-colors duration-150 ${
+                  value === option
+                    ? 'text-crimson-800 font-medium'
+                    : 'text-ink-600 group-hover:text-ink-900'
+                }`}>
+                  {multipleLabels[option] || option}
+                </span>
+              </label>
+            ))}
+          </RadioGroup>
+        )}
+
+        {type === 'dropdown' && (
+          <div>
+            <Label className="text-[10px] tracking-[0.25em] uppercase text-ink-400 mb-2 block">
+              Select your age range
+            </Label>
             <select
               value={value || ''}
               onChange={e => onChange(e.target.value)}
-              className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+              className="w-full p-3 border border-ink-300 bg-white text-ink-700 font-sans text-sm focus:outline-none focus:ring-1 focus:ring-crimson-500 focus:border-crimson-500 rounded-none"
             >
-              <option value="">Select age range</option>
-              {options?.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
+              <option value="">Choose...</option>
+              {options?.map((option, i) => (
+                <option key={i} value={option}>{option}</option>
               ))}
             </select>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </Card>
+    </div>
   );
 }

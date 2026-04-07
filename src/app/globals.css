@@ -4,48 +4,49 @@
 
 @layer base {
   :root {
-    --background: #f7f5f0;
-    --foreground: #2d3748;
-    --card: #ffffff;
-    --card-foreground: #2d3748;
-    --popover: #ffffff;
-    --popover-foreground: #2d3748;
-    --primary: #68a357;
-    --primary-foreground: #ffffff;
-    --secondary: #8b7355;
-    --secondary-foreground: #ffffff;
-    --muted: #e8e4d8;
-    --muted-foreground: #6b7280;
-    --accent: #a8c09a;
-    --accent-foreground: #2d3748;
-    --destructive: #e53e3e;
-    --destructive-foreground: #ffffff;
-    --border: #d1c7b8;
-    --input: #f9f7f3;
-    --ring: #68a357;
-    --radius: 0.75rem;
+    /* Japanese Ikigai — Parchment · Ink · Crimson */
+    --background: #F5F0E8;
+    --foreground: #1C1917;
+    --card: #FDFCFA;
+    --card-foreground: #1C1917;
+    --popover: #FDFCFA;
+    --popover-foreground: #1C1917;
+    --primary: #B91C1C;
+    --primary-foreground: #FFFFFF;
+    --secondary: #A47C52;
+    --secondary-foreground: #FFFFFF;
+    --muted: #E8E0D5;
+    --muted-foreground: #78716C;
+    --accent: #DDD0BE;
+    --accent-foreground: #1C1917;
+    --destructive: #E53E3E;
+    --destructive-foreground: #FFFFFF;
+    --border: #D5C9B8;
+    --input: #FDFCFA;
+    --ring: #B91C1C;
+    --radius: 0.375rem;
   }
 
   .dark {
-    --background: #1f1f1f;
-    --foreground: #fafaf7;
-    --card: #2a2a2a;
-    --card-foreground: #fafaf7;
-    --popover: #2a2a2a;
-    --popover-foreground: #fafaf7;
-    --primary: #6366f1;
-    --primary-foreground: #ffffff;
-    --secondary: #fb7185;
-    --secondary-foreground: #ffffff;
-    --muted: #374151;
-    --muted-foreground: #9ca3af;
-    --accent: #374151;
-    --accent-foreground: #fafaf7;
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --border: #374151;
-    --input: #374151;
-    --ring: #6366f1;
+    --background: #1A1410;
+    --foreground: #F5F0E8;
+    --card: #231E18;
+    --card-foreground: #F5F0E8;
+    --popover: #231E18;
+    --popover-foreground: #F5F0E8;
+    --primary: #DC2626;
+    --primary-foreground: #FFFFFF;
+    --secondary: #A47C52;
+    --secondary-foreground: #FFFFFF;
+    --muted: #2A2218;
+    --muted-foreground: #A8998B;
+    --accent: #2A2218;
+    --accent-foreground: #F5F0E8;
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    --border: #3D3228;
+    --input: #2A2218;
+    --ring: #DC2626;
   }
 }
 
@@ -55,162 +56,107 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Elegant horizontal rule */
+  hr {
+    @apply border-t border-ink-200;
   }
 }
 
 @layer utilities {
-  /* Mobile-specific improvements */
+  /* Mobile touch targets */
   @media (max-width: 768px) {
-    /* Improve touch targets */
     button, [role="button"], input, select, textarea {
       min-height: 44px;
       min-width: 44px;
     }
-    
-    /* Prevent zoom on input focus */
     input, select, textarea {
       font-size: 16px;
     }
-    
-    /* Improve scrolling on mobile */
     * {
       -webkit-overflow-scrolling: touch;
     }
   }
 
-  /* Custom animations compatible with html2canvas */
+  /* Japanese label style */
+  .label-japanese {
+    @apply tracking-[0.3em] text-xs uppercase font-sans text-crimson-600;
+  }
+
+  /* Editorial thin rule */
+  .rule-crimson {
+    @apply w-12 h-px bg-crimson-600 mx-auto;
+  }
+
+  /* Parchment card */
+  .card-parchment {
+    @apply bg-parchment-50 border border-parchment-300 rounded-lg;
+  }
+
+  /* Premium section padding */
+  .section-padding {
+    @apply px-6 sm:px-8 lg:px-12 py-16 sm:py-24;
+  }
+
+  /* Animations */
   @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
   }
 
   @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes fade-out {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
+    from { opacity: 1; }
+    to { opacity: 0; }
   }
 
   @keyframes zoom-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
   }
 
   @keyframes zoom-out {
-    from {
-      opacity: 1;
-      transform: scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: scale(0.95);
-    }
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
   }
 
   @keyframes slide-in-from-top {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes slide-in-from-bottom {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes slide-in-from-left {
-    from {
-      opacity: 0;
-      transform: translateX(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes slide-in-from-right {
-    from {
-      opacity: 0;
-      transform: translateX(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
-  /* Animation utility classes */
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .animate-in {
-    animation: fade-in 0.2s ease-out;
-  }
-
-  .animate-out {
-    animation: fade-out 0.2s ease-out;
-  }
-
-  .fade-in-0 {
-    animation: fade-in 0.2s ease-out;
-  }
-
-  .fade-out-0 {
-    animation: fade-out 0.2s ease-out;
-  }
-
-  .zoom-in-95 {
-    animation: zoom-in 0.2s ease-out;
-  }
-
-  .zoom-out-95 {
-    animation: zoom-out 0.2s ease-out;
-  }
-
-  .slide-in-from-top-2 {
-    animation: slide-in-from-top 0.2s ease-out;
-  }
-
-  .slide-in-from-bottom-2 {
-    animation: slide-in-from-bottom 0.2s ease-out;
-  }
-
-  .slide-in-from-left-2 {
-    animation: slide-in-from-left 0.2s ease-out;
-  }
-
-  .slide-in-from-right-2 {
-    animation: slide-in-from-right 0.2s ease-out;
-  }
+  /* Utility animation classes */
+  .animate-spin { animation: spin 1s linear infinite; }
+  .animate-in { animation: fade-in 0.2s ease-out; }
+  .animate-out { animation: fade-out 0.2s ease-out; }
+  .fade-in-0 { animation: fade-in 0.2s ease-out; }
+  .fade-out-0 { animation: fade-out 0.2s ease-out; }
+  .zoom-in-95 { animation: zoom-in 0.2s ease-out; }
+  .zoom-out-95 { animation: zoom-out 0.2s ease-out; }
+  .slide-in-from-top-2 { animation: slide-in-from-top 0.2s ease-out; }
+  .slide-in-from-bottom-2 { animation: slide-in-from-bottom 0.2s ease-out; }
+  .slide-in-from-left-2 { animation: slide-in-from-left 0.2s ease-out; }
+  .slide-in-from-right-2 { animation: slide-in-from-right 0.2s ease-out; }
 }

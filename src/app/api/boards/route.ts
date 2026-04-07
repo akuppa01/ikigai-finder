@@ -42,50 +42,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create board
-    const { data: board, error: boardError } = await supabaseAdmin
-      .from('boards')
-      .insert({
-        title,
-        user_id: null, // Anonymous for now
-      })
-      .select()
-      .single();
+    // Try to persist to Supabase — non-blocking: if DB is down, continue anyway
+    let boardId: string = crypto.randomUUID();
 
-    if (boardError) {
-      console.error('Board creation error:', boardError);
-      return NextResponse.json(
-        { error: `Failed to create board: ${boardError.message}` },
-        { status: 500 }
-      );
+    try {
+      const { data: board, error: boardError } = await supabaseAdmin
+        .from('boards')
+        .insert({ title, user_id: null })
+        .select()
+        .single();
+
+      if (boardError) {
+        console.warn('Board DB save skipped (Supabase unavailable):', boardError.message);
+      } else {
+        boardId = board.id;
+
+        const entriesToInsert = sanitizedEntries.map(entry => ({
+          board_id: boardId,
+          column_name: entry.column,
+          position: entry.position,
+          text: entry.text,
+          normalized_text: entry.text.toLowerCase().trim().replace(/[^\w\s]/g, ''),
+          created_by: null,
+        }));
+
+        const { error: entriesError } = await supabaseAdmin
+          .from('entries')
+          .insert(entriesToInsert);
+
+        if (entriesError) {
+          console.warn('Entries DB save skipped:', entriesError.message);
+        }
+      }
+    } catch (dbErr) {
+      console.warn('Supabase unreachable — continuing without DB persistence:', dbErr);
     }
 
-    // Create entries
-    const entriesToInsert = sanitizedEntries.map(entry => ({
-      board_id: board.id,
-      column_name: entry.column,
-      position: entry.position,
-      text: entry.text,
-      normalized_text: entry.text
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s]/g, ''),
-      created_by: null,
-    }));
-
-    const { error: entriesError } = await supabaseAdmin
-      .from('entries')
-      .insert(entriesToInsert);
-
-    if (entriesError) {
-      console.error('Entries creation error:', entriesError);
-      return NextResponse.json(
-        { error: `Failed to create entries: ${entriesError.message}` },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ boardId: board.id });
+    return NextResponse.json({ boardId });
   } catch (error) {
     console.error('Error creating board:', error);
     return NextResponse.json(

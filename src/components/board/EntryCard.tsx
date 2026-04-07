@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, memo } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { X, GripVertical } from 'lucide-react';
@@ -46,19 +46,17 @@ const EntryCard = memo(
       isDragging,
     } = useSortable({
       id: entry.id,
-      data: {
-        type: 'entry',
-        entry,
-      },
+      data: { type: 'entry', entry },
       disabled: isEditing,
     });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    // Optimize for drag operations - use GPU acceleration
-    ...(isDragging && { willChange: 'transform' }),
-  };
+    const dragStyle: React.CSSProperties = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      ...(isDragging && { willChange: 'transform' }),
+      borderLeftColor: columnColor,
+      borderLeftWidth: '2px',
+    };
 
     useEffect(() => {
       if (isEditing && inputRef.current) {
@@ -75,119 +73,88 @@ const EntryCard = memo(
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         onUpdate(localText);
-        setTimeout(() => {
-          onNavigateNext?.();
-        }, 100);
+        setTimeout(() => onNavigateNext?.(), 100);
       } else if (e.key === 'Escape') {
         e.preventDefault();
         onCancelEdit();
       } else if (e.key === 'Tab') {
         e.preventDefault();
-        if (e.shiftKey) {
-          onNavigatePrevious?.();
-        } else {
-          onNavigateNext?.();
-        }
+        if (e.shiftKey) onNavigatePrevious?.();
+        else onNavigateNext?.();
       }
-    };
-
-    const handleBlur = () => {
-      onUpdate(localText);
     };
 
     const handleClick = (e: React.MouseEvent) => {
       if (
-        e.target === e.currentTarget ||
         (e.target as HTMLElement).closest('[data-drag-handle]') ||
         (e.target as HTMLElement).closest('[data-delete-button]')
-      ) {
-        return;
-      }
-
-      if (!isEditing) {
-        onEdit();
-      }
-    };
-
-    const handleTouchStart = (e: React.TouchEvent) => {
-      if (isEditing) {
-        e.stopPropagation();
-      }
+      ) return;
+      if (!isEditing) onEdit();
     };
 
     return (
       <div
         ref={setNodeRef}
-        style={style}
+        style={dragStyle}
         className={cn(
-          'group relative bg-white rounded-xl shadow-md border-2 border-gray-200/60 transition-[box-shadow,border-color,opacity] duration-200',
-          isSelected && 'ring-2 ring-blue-500 ring-offset-2 shadow-lg',
-          isDragging && 'opacity-70 shadow-2xl',
-          'hover:shadow-lg hover:border-gray-300'
+          'group relative bg-white border border-ink-200 transition-[border-color,opacity,box-shadow] duration-150',
+          isSelected && 'ring-1 ring-offset-1',
+          isDragging && 'opacity-60 shadow-lg',
+          !isEditing && 'hover:border-ink-400 cursor-pointer'
         )}
         onClick={handleClick}
-        onTouchStart={handleTouchStart}
       >
+        {/* Drag handle */}
         <div
           {...attributes}
           {...listeners}
           data-drag-handle
-          className="absolute left-2 sm:left-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-10 p-1 hover:bg-gray-100 rounded-md border border-transparent hover:border-gray-200"
+          className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-grab active:cursor-grabbing z-10 p-0.5"
           onClick={e => e.stopPropagation()}
-          title="Drag to move between columns"
         >
-          <GripVertical className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+          <GripVertical className="h-3 w-3 text-ink-300" />
         </div>
 
+        {/* Delete button */}
         <button
           data-delete-button
-          onClick={e => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="absolute right-2 sm:right-3 top-2 sm:top-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-100 rounded-full z-10 border border-transparent hover:border-red-200"
-          title="Delete item"
+          onClick={e => { e.stopPropagation(); onDelete(); }}
+          className="absolute right-1.5 top-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-0.5 hover:bg-crimson-50 z-10"
+          title="Delete"
         >
-          <X className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+          <X className="h-3 w-3 text-ink-300 hover:text-crimson-500" />
         </button>
 
-        <div className="p-2 sm:p-3 pr-8 sm:pr-10 pl-8 sm:pl-10 min-h-[50px] sm:min-h-[60px] flex items-center">
+        {/* Content */}
+        <div className="px-7 py-2.5 min-h-[42px] flex items-center">
           {isEditing ? (
             <textarea
               ref={inputRef}
               value={localText}
               onChange={e => setLocalText(e.target.value)}
               onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              className="w-full resize-none border-none outline-none text-xs sm:text-sm bg-transparent font-medium"
-              placeholder="Enter your text..."
+              onBlur={() => onUpdate(localText)}
+              className="w-full resize-none border-none outline-none text-xs bg-transparent text-ink-800 font-sans leading-relaxed"
+              placeholder="Type here..."
               rows={2}
             />
           ) : (
-            <div className="w-full text-xs sm:text-sm text-gray-700 whitespace-pre-wrap font-medium">
+            <p className="w-full text-xs text-ink-700 font-sans leading-relaxed whitespace-pre-wrap">
               {entry.text || (
-                <span className="text-gray-400 italic">Click to edit...</span>
+                <span className="text-ink-300 italic">Click to edit...</span>
               )}
-            </div>
+            </p>
           )}
         </div>
-
-        <div
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
-          style={{ backgroundColor: columnColor }}
-        />
       </div>
     );
   },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.entry.id === nextProps.entry.id &&
-      prevProps.entry.text === nextProps.entry.text &&
-      prevProps.isSelected === nextProps.isSelected &&
-      prevProps.isEditing === nextProps.isEditing &&
-      prevProps.columnColor === nextProps.columnColor
-    );
-  }
+  (prevProps, nextProps) =>
+    prevProps.entry.id === nextProps.entry.id &&
+    prevProps.entry.text === nextProps.entry.text &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.columnColor === nextProps.columnColor
 );
 
 export default EntryCard;

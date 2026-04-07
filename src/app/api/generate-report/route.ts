@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAIReport } from '@/lib/gemini';
 import { supabaseAdmin } from '@/lib/supabase';
+import { cacheReport } from '@/lib/report-cache';
 import { Entry, QuizResponse, UserProfile } from '@/lib/types';
 import {
   validateEmail,
@@ -139,84 +140,60 @@ export async function POST(request: NextRequest) {
       throw new Error('Incomplete response from AI');
     }
 
-    // Save or update user profile
-    let profileUserId = userId;
-    if (sanitizedProfile.email) {
-      const { data: existingProfile, error: profileLookupError } =
-        await supabaseAdmin
-          .from('profiles')
-          .select('id')
-          .eq('email', sanitizedProfile.email)
-          .single();
+    // Try to persist to Supabase — non-blocking fallback to in-memory cache
+    let reportId: string = crypto.randomUUID();
 
-      if (profileLookupError && profileLookupError.code !== 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Failed to lookup profile' },
-          { status: 500 }
-        );
+    try {
+      let profileUserId = userId;
+
+      if (sanitizedProfile.email) {
+        const { data: existingProfile, error: profileLookupError } =
+          await supabaseAdmin
+            .from('profiles')
+            .select('id')
+            .eq('email', sanitizedProfile.email)
+            .single();
+
+        if (!profileLookupError || profileLookupError.code === 'PGRST116') {
+          if (existingProfile) {
+            await supabaseAdmin
+              .from('profiles')
+              .update({ name: sanitizedProfile.name || existingProfile.name })
+              .eq('id', existingProfile.id);
+            profileUserId = existingProfile.id;
+          } else {
+            const { data: newProfile } = await supabaseAdmin
+              .from('profiles')
+              .insert({ email: sanitizedProfile.email, name: sanitizedProfile.name || null })
+              .select()
+              .single();
+            if (newProfile) profileUserId = newProfile.id;
+          }
+        }
       }
 
-      if (existingProfile) {
-        // Update existing profile
-        const { error: updateError } = await supabaseAdmin
-          .from('profiles')
-          .update({
-            name: sanitizedProfile.name || existingProfile.name,
-          })
-          .eq('id', existingProfile.id);
+      const { data: savedReport, error: reportError } = await supabaseAdmin
+        .from('reports')
+        .insert({
+          board_id: boardId,
+          user_id: profileUserId || null,
+          report_json: reportData,
+        })
+        .select()
+        .single();
 
-        if (updateError) {
-          return NextResponse.json(
-            { error: 'Failed to update profile' },
-            { status: 500 }
-          );
-        }
-
-        profileUserId = existingProfile.id;
+      if (reportError) {
+        console.warn('Report DB save failed — using memory cache:', reportError.message);
+        cacheReport(reportId, reportData);
       } else {
-        // Create new profile
-        const { data: newProfile, error: createError } = await supabaseAdmin
-          .from('profiles')
-          .insert({
-            email: sanitizedProfile.email,
-            name: sanitizedProfile.name || null,
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          return NextResponse.json(
-            { error: 'Failed to create profile' },
-            { status: 500 }
-          );
-        }
-
-        profileUserId = newProfile.id;
+        reportId = savedReport.id;
       }
+    } catch (dbErr) {
+      console.warn('Supabase unreachable — caching report in memory:', dbErr);
+      cacheReport(reportId, reportData);
     }
 
-    // Save to database
-    const { data: report, error: reportError } = await supabaseAdmin
-      .from('reports')
-      .insert({
-        board_id: boardId,
-        user_id: profileUserId || null,
-        report_json: reportData,
-      })
-      .select()
-      .single();
-
-    if (reportError) {
-      return NextResponse.json(
-        { error: 'Failed to save report' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
-      reportId: report.id,
-      report: reportData,
-    });
+    return NextResponse.json({ reportId, report: reportData });
   } catch (error) {
     console.error('Generate report error:', error);
     console.error('Error details:', {

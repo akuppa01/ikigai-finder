@@ -18,46 +18,48 @@ interface ColumnProps {
   onNavigatePrevious?: () => void;
 }
 
-const columnConfig = {
+const columnConfig: Record<ColumnKey, { title: string; description: string; color: string; kanji: string; japanese: string }> = {
   love: {
     title: 'LOVE',
     description: 'What you love',
-    color: '#4F46E5',
+    color: '#B91C1C',
+    kanji: '愛',
+    japanese: 'Ai',
   },
   good_at: {
     title: 'GOOD AT',
     description: "What you're good at",
-    color: '#10B981',
+    color: '#1E4D72',
+    kanji: '才',
+    japanese: 'Sai',
   },
   paid_for: {
     title: 'EARN',
     description: 'What you can be paid for',
-    color: '#F59E0B',
+    color: '#B8860B',
+    kanji: '富',
+    japanese: 'Tomi',
   },
   world_needs: {
     title: 'NEEDS',
     description: 'What the world needs',
-    color: '#FB7185',
+    color: '#2D6A4F',
+    kanji: '世',
+    japanese: 'Yo',
   },
 };
 
 const Column = memo(function Column({
   columnKey,
   entries,
-  color,
   onNavigateNext,
   onNavigatePrevious,
 }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: columnKey,
-    data: {
-      type: 'column',
-      columnKey,
-    },
+    data: { type: 'column', columnKey },
   });
 
-  // Only subscribe to the specific values we need from the store
-  // This prevents re-renders when unrelated store values change
   const selectedEntryId = useBoardStore(state => state.selectedEntryId);
   const editingEntryId = useBoardStore(state => state.editingEntryId);
   const addEntry = useBoardStore(state => state.addEntry);
@@ -69,125 +71,104 @@ const Column = memo(function Column({
   const config = columnConfig[columnKey];
   const isAtLimit = entries.length >= 25;
 
-  const handleAddEntry = () => {
-    if (!isAtLimit) {
-      addEntry(columnKey);
-    }
-  };
-
-  const handleSelect = (entryId: string) => {
-    setSelectedEntry(entryId);
-  };
-
-  const handleEdit = (entryId: string) => {
-    setEditingEntry(entryId);
-  };
-
-  const handleUpdate = (entryId: string, text: string) => {
-    updateEntry(entryId, text);
-    setEditingEntry(null);
-  };
-
-  const handleDelete = (entryId: string) => {
-    deleteEntry(entryId);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingEntry(null);
-  };
-
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        // Removed backdrop-blur-sm (GPU-intensive) and replaced with solid background
-        // Removed scale transforms on hover (trigger layout recalculations)
-        // Changed transition-all to specific properties only
-        // Changed bg-white/98 to bg-white to reduce compositing layers
-        // Changed bg-blue-50/40 to bg-blue-50 to avoid opacity compositing
-        'flex flex-col h-auto min-h-[300px] sm:min-h-[400px] lg:h-full lg:min-h-[500px] bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200/60 transition-[box-shadow,border-color] duration-200 shadow-lg',
-        isOver && 'border-blue-400 bg-blue-50 shadow-xl',
-        'hover:shadow-lg hover:border-gray-300'
+        'flex flex-col h-auto min-h-[300px] sm:min-h-[420px] lg:h-full lg:min-h-[500px] bg-white border border-ink-200 transition-[border-color,background-color] duration-200',
+        isOver && 'border-crimson-400 bg-crimson-50/30'
       )}
+      style={{
+        borderTopColor: config.color,
+        borderTopWidth: '3px',
+      }}
     >
-      {/* Header */}
-      <div className="p-3 sm:p-4 border-b-2 border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-        <div className="flex items-center justify-between">
+      {/* Column header */}
+      <div className="px-4 py-4 border-b border-ink-100">
+        <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-bold truncate" style={{ color }}>
-              {config.title}
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 font-medium truncate">{config.description}</p>
+            <div className="flex items-baseline gap-2 mb-0.5">
+              <span
+                className="font-serif text-base opacity-70"
+                style={{ color: config.color }}
+              >
+                {config.kanji}
+              </span>
+              <span
+                className="text-[9px] tracking-[0.25em] uppercase font-sans font-medium"
+                style={{ color: config.color }}
+              >
+                {config.title}
+              </span>
+            </div>
+            <p className="text-[11px] text-ink-400 font-sans">{config.description}</p>
           </div>
-          <div className="text-xs sm:text-sm font-semibold text-white px-2 sm:px-3 py-1 rounded-full shadow-md ml-2" style={{ backgroundColor: color }}>
+          <span className="text-[10px] text-ink-300 font-sans tabular-nums ml-2 mt-0.5">
             {entries.length}/25
-          </div>
+          </span>
         </div>
       </div>
 
       {/* Entries */}
-      <div className="flex-1 p-2 sm:p-3 space-y-2 overflow-y-auto">
+      <div className="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
         {entries.map(entry => (
           <EntryCard
             key={entry.id}
             entry={entry}
             isSelected={selectedEntryId === entry.id}
             isEditing={editingEntryId === entry.id}
-            onSelect={() => handleSelect(entry.id)}
-            onEdit={() => handleEdit(entry.id)}
-            onDelete={() => handleDelete(entry.id)}
-            onUpdate={text => handleUpdate(entry.id, text)}
-            onCancelEdit={handleCancelEdit}
-            columnColor={color}
+            onSelect={() => setSelectedEntry(entry.id)}
+            onEdit={() => setEditingEntry(entry.id)}
+            onDelete={() => deleteEntry(entry.id)}
+            onUpdate={text => { updateEntry(entry.id, text); setEditingEntry(null); }}
+            onCancelEdit={() => setEditingEntry(null)}
+            columnColor={config.color}
             onNavigateNext={onNavigateNext}
             onNavigatePrevious={onNavigatePrevious}
           />
         ))}
 
-        {/* Drop zone when empty */}
         {entries.length === 0 && (
-          <div className="flex items-center justify-center h-24 sm:h-32 border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl text-gray-500">
-            <p className="text-xs sm:text-sm text-center px-2">Drop items here or add new ones</p>
+          <div
+            className="flex items-center justify-center h-20 border border-dashed rounded-none text-ink-300"
+            style={{ borderColor: `${config.color}40` }}
+          >
+            <p className="text-[11px] tracking-wide text-center px-3">
+              Add an item below
+            </p>
           </div>
         )}
       </div>
 
       {/* Add button */}
-      <div className="p-3 sm:p-4 border-t border-gray-200">
+      <div className="p-3 border-t border-ink-100">
         <button
-          onClick={handleAddEntry}
+          onClick={() => { if (!isAtLimit) addEntry(columnKey); }}
           disabled={isAtLimit}
           className={cn(
-            'w-full flex items-center justify-center gap-2 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl transition-[border-color,background-color] duration-200',
+            'w-full flex items-center justify-center gap-2 py-2.5 px-3 text-[11px] tracking-widest uppercase font-sans transition-colors duration-150',
             isAtLimit
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600'
+              ? 'text-ink-200 cursor-not-allowed'
+              : 'text-ink-400 hover:text-ink-700 border border-dashed border-ink-200 hover:border-ink-400'
           )}
         >
-          <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="text-xs sm:text-sm font-medium">
-            {isAtLimit ? 'Limit reached (25)' : 'Add item'}
-          </span>
+          <Plus className="h-3 w-3" />
+          {isAtLimit ? 'Limit reached' : 'Add item'}
         </button>
       </div>
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Custom comparison to prevent unnecessary re-renders
-  // Only re-render if entries actually changed (by reference or content)
   if (prevProps.columnKey !== nextProps.columnKey) return false;
   if (prevProps.color !== nextProps.color) return false;
   if (prevProps.entries.length !== nextProps.entries.length) return false;
-  
-  // Check if any entry changed
   for (let i = 0; i < prevProps.entries.length; i++) {
-    if (prevProps.entries[i].id !== nextProps.entries[i].id ||
-        prevProps.entries[i].text !== nextProps.entries[i].text) {
-      return false;
-    }
+    if (
+      prevProps.entries[i].id !== nextProps.entries[i].id ||
+      prevProps.entries[i].text !== nextProps.entries[i].text
+    ) return false;
   }
-  
-  return true; // Props are equal, skip re-render
+  return true;
 });
 
 export default Column;

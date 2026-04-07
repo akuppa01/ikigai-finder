@@ -2,15 +2,13 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import PageTransition from '@/components/ui/page-transition';
 import LoadingScreen from '@/components/ui/loading-screen';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import Board from '@/components/board/Board';
 import { useBoardStore } from '@/hooks/useBoardStore';
-import BackgroundBlobs from '@/components/BackgroundBlobs';
+import NinjaStar from '@/components/NinjaStar';
 
 export default function BoardPage() {
   const { columns, resetBoard } = useBoardStore();
@@ -19,36 +17,25 @@ export default function BoardPage() {
   const handleConfirmBoard = async () => {
     setIsConfirming(true);
 
-    // Get all entries with text
     const allEntries = Object.values(columns)
       .flat()
       .filter(entry => entry.text.trim());
 
     if (allEntries.length === 0) {
-      alert('Please add some items to your board before confirming.');
+      alert('Please add some items to your board before continuing.');
       setIsConfirming(false);
       return;
     }
 
     try {
-      // Call normalize board API
       const response = await fetch('/api/normalize-board', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entries: allEntries,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries: allEntries }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to normalize board');
-      }
-
+      if (!response.ok) throw new Error('Failed to normalize board');
       await response.json();
-
-      // Redirect to quiz
       window.location.href = '/quiz';
     } catch (error) {
       console.error('Error confirming board:', error);
@@ -59,11 +46,7 @@ export default function BoardPage() {
   };
 
   const handleResetBoard = () => {
-    if (
-      confirm(
-        'Are you sure you want to reset the board? This will clear all your entries.'
-      )
-    ) {
+    if (confirm('Reset the board? This will clear all your entries.')) {
       resetBoard();
     }
   };
@@ -72,107 +55,139 @@ export default function BoardPage() {
     .flat()
     .filter(entry => entry.text.trim()).length;
 
+  const progress = Math.min((totalEntries / 20) * 100, 100);
+
   if (isConfirming) {
     return <LoadingScreen message="Processing your board..." />;
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-        <BackgroundBlobs />
+    <div className="min-h-screen bg-[#F5F0E8] font-sans">
 
       {/* Header */}
-      <div className="relative z-10 p-4 sm:p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+      <header className="border-b border-ink-200/40 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" className="gap-2 text-sm sm:text-base">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-ink-500 hover:text-ink-900 hover:bg-ink-100 text-xs tracking-widest uppercase font-sans rounded-none"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                Back
               </Button>
             </Link>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                onClick={handleResetBoard}
-                className="gap-2 text-sm sm:text-base flex-1 sm:flex-none"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-
-              <Button
-                onClick={handleConfirmBoard}
-                disabled={isConfirming || totalEntries === 0}
-                className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm sm:text-base flex-1 sm:flex-none"
-              >
-                <CheckCircle className="h-4 w-4" />
-                {isConfirming ? 'Processing...' : 'Confirm Board'}
-              </Button>
+            <div className="hidden sm:flex items-center gap-2">
+              <NinjaStar size={20} animated={false} />
+              <span className="font-serif text-sm font-light tracking-[0.2em] text-ink-600 uppercase">
+                Ikigai Board
+              </span>
             </div>
           </div>
 
-          {/* Instructions */}
-          <Card className="p-4 sm:p-6 mb-4 sm:mb-6 bg-white/95">
-            <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Build Your Ikigai
-              </h1>
-              <p className="text-sm sm:text-base text-gray-600 mb-4">
-                Fill in each column with what matters to you. Drag items between
-                columns to copy them.
-              </p>
-              <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-                  <span>What you love</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                  <span>What you&apos;re good at</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                  <span>What you can be paid for</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-pink-500"></div>
-                  <span>What the world needs</span>
-                </div>
-              </div>
-            </div>
-          </Card>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button
+              variant="ghost"
+              onClick={handleResetBoard}
+              size="sm"
+              className="gap-2 text-ink-400 hover:text-ink-700 text-xs tracking-widest uppercase rounded-none"
+            >
+              <RotateCcw className="h-3 w-3" />
+              <span className="hidden sm:inline">Reset</span>
+            </Button>
 
-          {/* Progress */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
-              <span>Progress</span>
-              <span>{totalEntries} items added</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{
-                  width: `${Math.min((totalEntries / 20) * 100, 100)}%`,
-                }}
-                transition={{ duration: 0.5 }}
+            <Button
+              onClick={handleConfirmBoard}
+              disabled={isConfirming || totalEntries === 0}
+              size="sm"
+              className="gap-2 bg-crimson-600 hover:bg-crimson-700 text-white text-xs tracking-[0.2em] uppercase rounded-none disabled:opacity-40 px-5 sm:px-8 py-2 font-sans transition-colors duration-200"
+            >
+              Continue
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Page intro */}
+      <div className="px-4 sm:px-8 pt-10 pb-6 max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-xl"
+        >
+          <p className="tracking-[0.3em] text-crimson-600 text-[10px] uppercase font-sans mb-3">
+            Step 01 of 03
+          </p>
+          <h1 className="font-serif text-2xl sm:text-3xl font-light text-ink-900 mb-3">
+            Build Your Ikigai Board
+          </h1>
+          <div className="w-8 h-px bg-crimson-600 mb-4" />
+          <p className="text-ink-500 text-sm leading-relaxed">
+            Fill each column with your honest answers. You can drag entries across columns —
+            an item can belong to multiple areas of your life.
+          </p>
+        </motion.div>
+
+        {/* Progress */}
+        <div className="mt-6 flex items-center gap-4 max-w-sm">
+          <div className="flex-1 h-px bg-ink-200 relative">
+            <motion.div
+              className="absolute left-0 top-0 h-full bg-crimson-600"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+          <span className="text-xs text-ink-400 tabular-nums whitespace-nowrap">
+            {totalEntries} items
+          </span>
+        </div>
+
+        {/* Column legend */}
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+          {[
+            { label: 'LOVE', color: '#B91C1C', note: 'What you love' },
+            { label: 'GOOD AT', color: '#1E4D72', note: "What you're good at" },
+            { label: 'EARN', color: '#B8860B', note: 'What pays you' },
+            { label: 'NEEDS', color: '#2D6A4F', note: 'What the world needs' },
+          ].map(col => (
+            <div key={col.label} className="flex items-center gap-2">
+              <span
+                className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: col.color }}
               />
+              <span className="text-[10px] tracking-widest uppercase text-ink-500">
+                {col.label}
+              </span>
+              <span className="text-[10px] text-ink-400 hidden sm:inline">
+                · {col.note}
+              </span>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Board */}
-      <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="h-auto min-h-[400px] sm:h-[600px] sm:min-h-[500px]">
-            <Board />
-          </div>
+      <div className="px-4 sm:px-8 pb-12 max-w-7xl mx-auto">
+        <div className="h-auto min-h-[420px] sm:h-[600px]">
+          <Board />
         </div>
       </div>
+
+      {/* Bottom CTA on mobile */}
+      <div className="sm:hidden px-4 pb-8">
+        <Button
+          onClick={handleConfirmBoard}
+          disabled={isConfirming || totalEntries === 0}
+          className="w-full gap-2 bg-crimson-600 hover:bg-crimson-700 text-white text-xs tracking-[0.2em] uppercase rounded-none disabled:opacity-40 py-4 font-sans"
+        >
+          Continue to Questions
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
-    </PageTransition>
+    </div>
   );
 }

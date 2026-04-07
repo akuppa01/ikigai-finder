@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
 export async function POST(req: Request) {
   const { responses } = await req.json()
+
+  const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
 
   const prompt = `
 Based on these Ikigai responses, generate a short motivational summary:

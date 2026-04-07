@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Lato, Merriweather } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
@@ -16,18 +16,19 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: 'Ikigai Career Discovery',
+  title: 'Ikigai — Discover Your Reason for Being',
   description:
     "Discover your purpose through the intersection of what you love, what you're good at, what you can be paid for, and what the world needs.",
   verification: {
     google: '0BEX4Rw0MLK2KXMICB-yE2_pBXjUTOJ8gz32oytKRZU',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

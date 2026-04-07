@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Read(//usr/local/lib/node_modules/**)",
+      "Read(//Users/adi/.nvm/versions/node/**)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v18.17.0/bin:$PATH\")",
+      "Bash(npm run:*)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v18.18.0/bin:$PATH\")"
+    ]
+  }
+}

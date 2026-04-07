@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CheckCircle, Home } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Home } from 'lucide-react';
 import Link from 'next/link';
-import PageTransition from '@/components/ui/page-transition';
 import LoadingScreen from '@/components/ui/loading-screen';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -21,52 +19,60 @@ import QuestionCard from '@/components/quiz/QuestionCard';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import { useQuizStore } from '@/hooks/useQuizStore';
 import { useBoardStore } from '@/hooks/useBoardStore';
-import BackgroundBlobs from '@/components/BackgroundBlobs';
+import NinjaStar from '@/components/NinjaStar';
 
 const questions = [
   {
     id: 'q1',
-    question: 'I prefer working with people rather than with data/tasks.',
+    question: 'I prefer working with people rather than with data or tasks.',
     type: 'likert' as const,
+    reflection: 'Consider how you feel after a day of collaboration vs. solo work.',
   },
   {
     id: 'q2',
-    question: 'I enjoy solving technical problems.',
+    question: 'I enjoy solving technical or complex problems.',
     type: 'likert' as const,
+    reflection: 'Think about moments when you felt most engaged and energized.',
   },
   {
     id: 'q3',
-    question: 'I prefer structured routines to uncertain projects.',
+    question: 'I prefer structured routines over uncertain or open-ended projects.',
     type: 'likert' as const,
+    reflection: 'Neither answer is better — both reveal something true about you.',
   },
   {
     id: 'q4',
-    question: 'Do you prefer leading people or working independently?',
+    question: 'How do you prefer to contribute within a team?',
     type: 'multiple' as const,
     options: ['lead', 'collaborate', 'independent'],
+    reflection: 'Your natural role is often where you do your best work.',
   },
   {
     id: 'q5',
-    question: 'Are you currently a student or a working professional?',
+    question: 'Which best describes your current life stage?',
     type: 'multiple' as const,
     options: ['student', 'professional'],
+    reflection: 'This helps us tailor your recommendations appropriately.',
   },
   {
     id: 'q6',
-    question: 'How willing are you to invest time/money in training?',
+    question: 'How willing are you to invest time or resources in further training?',
     type: 'multiple' as const,
     options: ['low', 'medium', 'high'],
+    reflection: 'Honest answers lead to more realistic and useful guidance.',
   },
   {
     id: 'q7',
-    question: "What's your age range?",
+    question: 'What is your age range?',
     type: 'dropdown' as const,
     options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
+    reflection: 'Age shapes opportunity — we will meet you where you are.',
   },
   {
     id: 'q8',
-    question: 'Are you open to entrepreneurship?',
+    question: 'I am open to building something of my own — a business, project, or practice.',
     type: 'likert' as const,
+    reflection: 'Entrepreneurship is one of many valid paths. Be honest.',
   },
 ];
 
@@ -89,8 +95,8 @@ export default function QuizPage() {
 
   const currentQ = questions[currentQuestion];
   const isLastQuestion = currentQuestion === questions.length - 1;
-  const canProceed =
-    responses[currentQ.id as keyof typeof responses] !== undefined;
+  const canProceed = responses[currentQ.id as keyof typeof responses] !== undefined;
+  const progressPct = ((currentQuestion + 1) / questions.length) * 100;
 
   const handleNext = () => {
     if (isLastQuestion) {
@@ -101,357 +107,304 @@ export default function QuizPage() {
     }
   };
 
-  const handlePrevious = () => {
-    previousQuestion();
-  };
-
   const handleGenerateReport = async () => {
     if (!email.trim()) {
       alert('Please enter your email address');
       return;
     }
-
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
       alert('Please enter a valid email address');
       return;
     }
 
-    // Check if all required quiz questions are answered
     const requiredQuestions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'];
-    const missingQuestions = requiredQuestions.filter(
-      q => !responses[q as keyof typeof responses]
-    );
-
-    if (missingQuestions.length > 0) {
-      alert(
-        `Please answer all quiz questions before generating a report. Missing: ${missingQuestions.join(', ')}`
-      );
+    const missing = requiredQuestions.filter(q => !responses[q as keyof typeof responses]);
+    if (missing.length > 0) {
+      alert(`Please answer all questions before generating your report.`);
       return;
     }
 
     setIsGenerating(true);
-
     try {
-      // Get all entries with text
-      const allEntries = Object.values(columns)
-        .flat()
-        .filter(entry => entry.text.trim());
+      const allEntries = Object.values(columns).flat().filter(e => e.text.trim());
 
-      // Create board in database
       const boardResponse = await fetch('/api/boards', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: 'My Ikigai Board',
-          entries: allEntries,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'My Ikigai Board', entries: allEntries }),
       });
 
       if (!boardResponse.ok) {
-        const errorData = await boardResponse.json();
-        console.error('Board save error:', errorData);
-        throw new Error(
-          `Failed to save board: ${errorData.error || 'Unknown error'}`
-        );
+        const err = await boardResponse.json();
+        throw new Error(err.error || 'Failed to save board');
       }
 
       const { boardId } = await boardResponse.json();
 
-      // Debug: Log the data being sent
-      console.log('Sending data to generate-report:', {
-        boardId,
-        entriesCount: allEntries.length,
-        quizResponses: responses,
-        profile: {
-          email: email.trim(),
-          name: name.trim() || undefined,
-        },
-      });
-
-      // Generate report
       const reportResponse = await fetch('/api/generate-report', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           boardId,
           entries: allEntries,
           quiz: responses,
-          profile: {
-            email: email.trim(),
-            name: name.trim() || undefined,
-          },
+          profile: { email: email.trim(), name: name.trim() || undefined },
         }),
       });
 
       if (!reportResponse.ok) {
         let errorData;
-        try {
-          errorData = await reportResponse.json();
-        } catch (parseError) {
-          console.error('Failed to parse error response:', parseError);
-          errorData = {
-            error: `HTTP ${reportResponse.status}: ${reportResponse.statusText}`,
-          };
-        }
-        console.error('Report generation error:', {
-          status: reportResponse.status,
-          statusText: reportResponse.statusText,
-          errorData,
-          url: reportResponse.url,
-        });
-        const errorMessage =
-          errorData.error ||
-          `HTTP ${reportResponse.status}: ${reportResponse.statusText}`;
-        throw new Error(errorMessage);
+        try { errorData = await reportResponse.json(); } catch { errorData = { error: `HTTP ${reportResponse.status}` }; }
+        throw new Error(errorData.error || `HTTP ${reportResponse.status}`);
       }
 
       const { reportId } = await reportResponse.json();
-
-      // Redirect to report
       window.location.href = `/report/${reportId}`;
     } catch (error) {
       console.error('Error generating report:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(errorMessage);
+      alert(error instanceof Error ? error.message : 'Unknown error occurred');
     } finally {
       setIsGenerating(false);
     }
   };
 
   if (isGenerating) {
-    return <LoadingScreen message="Generating your personalized report..." />;
+    return <LoadingScreen message="Crafting your personalized Ikigai report..." />;
   }
 
   if (isComplete && !showEmailModal) {
     return (
-      <PageTransition>
-        <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-          <BackgroundBlobs />
-
-          {/* Home Button - Top Left */}
-          <div className="relative z-10 p-6">
-            <Link href="/">
-              <Button
-                variant="ghost"
-                className="gap-2 text-gray-600 hover:text-gray-900"
-              >
-                <Home className="h-4 w-4" />
-                Back to Home
-              </Button>
-            </Link>
-          </div>
-
-          <div className="relative z-10 flex items-center justify-center min-h-screen p-6 -mt-20">
-            <Card className="p-8 max-w-md mx-auto text-center bg-white shadow-md">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Quiz Complete!
-              </h1>
-              <p className="text-gray-600 mb-6">
-                Ready to generate your personalized Ikigai report?
-              </p>
-              <Button
-                onClick={() => setShowEmailModal(true)}
-                className="w-full"
-              >
-                Generate Report
-              </Button>
-            </Card>
+      <div className="min-h-screen bg-[#F5F0E8] flex flex-col">
+        <header className="border-b border-ink-200/40 px-6 py-4">
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="gap-2 text-ink-500 hover:text-ink-900 text-xs tracking-widest uppercase rounded-none">
+              <Home className="h-3 w-3" />
+              Home
+            </Button>
+          </Link>
+        </header>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center max-w-sm">
+            <NinjaStar size={56} className="mx-auto mb-6" animated={false} />
+            <h1 className="font-serif text-2xl font-light text-ink-900 mb-3">
+              Reflection Complete
+            </h1>
+            <div className="w-8 h-px bg-crimson-600 mx-auto mb-4" />
+            <p className="text-ink-500 text-sm leading-relaxed mb-8">
+              You are ready to receive your personalized Ikigai report.
+            </p>
+            <Button
+              onClick={() => setShowEmailModal(true)}
+              className="bg-crimson-600 hover:bg-crimson-700 text-white text-xs tracking-[0.2em] uppercase rounded-none px-10 py-4 font-sans"
+            >
+              Generate My Report
+            </Button>
           </div>
         </div>
-      </PageTransition>
+      </div>
     );
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 relative overflow-hidden">
-        <BackgroundBlobs />
+    <div className="min-h-screen bg-[#F5F0E8] font-sans flex flex-col">
 
-        {/* Header */}
-        <div className="relative z-10 p-4 sm:p-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <Link href="/board">
-                <Button variant="ghost" className="gap-2 text-sm sm:text-base">
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Board
-                </Button>
-              </Link>
-
-              <div className="text-xs sm:text-sm text-gray-600">
-                Question {currentQuestion + 1} of {questions.length}
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mb-6 sm:mb-8">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <motion.div
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${((currentQuestion + 1) / questions.length) * 100}%`,
-                  }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-            </div>
+      {/* Header */}
+      <header className="border-b border-ink-200/40 px-4 sm:px-8 py-4">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <Link href="/board">
+            <Button variant="ghost" size="sm" className="gap-2 text-ink-500 hover:text-ink-900 text-xs tracking-widest uppercase rounded-none">
+              <ArrowLeft className="h-3 w-3" />
+              Board
+            </Button>
+          </Link>
+          <div className="flex items-center gap-3">
+            <NinjaStar size={20} animated={false} />
+            <span className="text-xs tracking-widest uppercase text-ink-400 font-sans">
+              {currentQuestion + 1} / {questions.length}
+            </span>
           </div>
         </div>
+      </header>
 
-        {/* Questions */}
-        <div className="relative z-10 px-4 sm:px-6 pb-4 sm:pb-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentQuestion}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="w-full"
-                >
-                  <QuestionCard
-                    question={questions[currentQuestion].question}
-                    type={questions[currentQuestion].type}
-                    options={questions[currentQuestion].options}
-                    value={
-                      responses[
-                        questions[currentQuestion].id as keyof typeof responses
-                      ]
-                    }
-                    onChange={value =>
-                      setResponse(
-                        questions[currentQuestion].id as keyof typeof responses,
-                        value
-                      )
-                    }
-                    isActive={true}
-                    isBlurred={false}
-                    questionNumber={currentQuestion + 1}
-                    totalQuestions={questions.length}
-                  />
-                </motion.div>
-              </AnimatePresence>
+      {/* Progress bar */}
+      <div className="h-px bg-ink-100">
+        <motion.div
+          className="h-full bg-crimson-600"
+          initial={{ width: 0 }}
+          animate={{ width: `${progressPct}%` }}
+          transition={{ duration: 0.5 }}
+        />
+      </div>
+
+      {/* Step dots */}
+      <div className="px-4 sm:px-8 pt-8 pb-4 max-w-3xl mx-auto w-full">
+        <div className="flex items-center gap-1.5">
+          {questions.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 flex-1 transition-colors duration-300 ${
+                i < currentQuestion
+                  ? 'bg-crimson-600'
+                  : i === currentQuestion
+                  ? 'bg-crimson-400'
+                  : 'bg-ink-200'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Step label */}
+      <div className="px-4 sm:px-8 pb-2 max-w-3xl mx-auto w-full">
+        <motion.div
+          key={currentQuestion}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <p className="tracking-[0.3em] text-crimson-600 text-[10px] uppercase font-sans">
+            Step 02 of 03 · Question {currentQuestion + 1}
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Question area */}
+      <div className="flex-1 px-4 sm:px-8 pb-4 max-w-3xl mx-auto w-full">
+        <div className="min-h-[320px] sm:min-h-[360px] flex items-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentQuestion}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="w-full"
+            >
+              <QuestionCard
+                question={currentQ.question}
+                type={currentQ.type}
+                options={currentQ.options}
+                value={responses[currentQ.id as keyof typeof responses]}
+                onChange={value => setResponse(currentQ.id as keyof typeof responses, value)}
+                isActive={true}
+                isBlurred={false}
+                questionNumber={currentQuestion + 1}
+                totalQuestions={questions.length}
+                reflection={(currentQ as { reflection?: string }).reflection}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between mt-4 gap-3">
+          <Button
+            variant="ghost"
+            onClick={previousQuestion}
+            disabled={currentQuestion === 0}
+            size="sm"
+            className="gap-2 text-ink-500 hover:text-ink-900 text-xs tracking-widest uppercase rounded-none disabled:opacity-30"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            Previous
+          </Button>
+
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed}
+            size="sm"
+            className="gap-2 bg-crimson-600 hover:bg-crimson-700 text-white text-xs tracking-[0.2em] uppercase rounded-none disabled:opacity-40 px-8 py-4 font-sans transition-colors duration-200"
+          >
+            {isLastQuestion ? 'Complete' : 'Next'}
+            <ArrowRight className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Email modal */}
+      <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
+        <DialogContent className="sm:max-w-md bg-parchment-50 border border-ink-200 rounded-none shadow-2xl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="font-serif text-xl font-light text-ink-900">
+              Receive Your Report
+            </DialogTitle>
+            <DialogDescription className="text-ink-500 text-sm leading-relaxed">
+              Enter your details to generate your personalized Ikigai career report.
+              We use your email to deliver and store your results.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-[10px] tracking-[0.3em] uppercase text-ink-500">
+                Name (optional)
+              </Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Your name"
+                className="rounded-none border-ink-300 bg-white focus:ring-crimson-500"
+              />
             </div>
 
-            {/* Navigation */}
-            <div className="flex items-center justify-between mt-4 sm:mt-6 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[10px] tracking-[0.3em] uppercase text-ink-500">
+                Email Address *
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+                className="rounded-none border-ink-300 bg-white focus:ring-crimson-500"
+              />
+            </div>
+
+            <p className="text-[10px] text-ink-400 leading-relaxed">
+              By continuing, you consent to receiving your Ikigai report by email.
+              We respect your privacy and will not share your data.
+            </p>
+
+            <div className="flex gap-3 pt-1">
               <Button
                 variant="outline"
-                onClick={handlePrevious}
-                disabled={currentQuestion === 0}
-                className="gap-2 border-2 border-gray-300 hover:border-gray-400 font-semibold text-sm sm:text-base flex-1 sm:flex-none"
+                onClick={() => setShowEmailModal(false)}
+                className="flex-1 rounded-none border-ink-300 text-ink-600 hover:bg-ink-50 text-xs tracking-wide uppercase"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Previous
+                Cancel
               </Button>
-
               <Button
-                onClick={handleNext}
-                disabled={!canProceed}
-                className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg text-sm sm:text-base flex-1 sm:flex-none"
+                onClick={handleGenerateReport}
+                disabled={isGenerating || !email.trim()}
+                className="flex-1 bg-crimson-600 hover:bg-crimson-700 text-white rounded-none text-xs tracking-[0.15em] uppercase disabled:opacity-40"
               >
-                {isLastQuestion ? 'Complete' : 'Next'}
-                <ArrowRight className="h-4 w-4" />
+                {isGenerating ? (
+                  <div className="flex items-center gap-2">
+                    <LoadingSpinner size="sm" text="" />
+                    <span>Generating...</span>
+                  </div>
+                ) : (
+                  'Generate Report'
+                )}
               </Button>
             </div>
+
+            <Link href="/" className="block">
+              <Button
+                variant="ghost"
+                className="w-full rounded-none text-ink-400 hover:text-ink-700 text-xs tracking-wide uppercase"
+              >
+                <Home className="w-3 h-3 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
           </div>
-        </div>
-
-        {/* Email Modal */}
-        <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
-          <DialogContent className="sm:max-w-md bg-white border-0 shadow-2xl">
-            <DialogHeader className="text-center pb-4">
-              <DialogTitle className="text-2xl font-bold text-gray-900">
-                Generate Your Report
-              </DialogTitle>
-              <DialogDescription className="text-gray-600 mt-2">
-                Enter your details to receive your personalized Ikigai career
-                report.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Name (optional)
-                </Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email *
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEmailModal(false)}
-                  className="flex-1 h-11 border-gray-200 hover:border-gray-300 transition-all duration-200"
-                >
-                  Cancel
-                </Button>
-                <div className="flex flex-col gap-3">
-                  <Button
-                    onClick={handleGenerateReport}
-                    disabled={isGenerating || !email.trim()}
-                    className="w-full h-12 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 disabled:opacity-50 transition-all duration-200 text-white font-semibold shadow-lg"
-                  >
-                    {isGenerating ? (
-                      <div className="flex items-center gap-2">
-                        <LoadingSpinner size="sm" text="" />
-                        <span>Generating...</span>
-                      </div>
-                    ) : (
-                      'Generate Report'
-                    )}
-                  </Button>
-
-                  <Link href="/">
-                    <Button
-                      variant="outline"
-                      className="w-full h-10 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
-                    >
-                      <Home className="w-4 h-4 mr-2" />
-                      Back to Home
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </PageTransition>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
