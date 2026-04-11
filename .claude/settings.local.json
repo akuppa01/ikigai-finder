@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Read(//usr/local/lib/node_modules/**)",
+      "Read(//Users/adi/.nvm/versions/node/**)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v18.17.0/bin:$PATH\")",
+      "Bash(npm run:*)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v18.18.0/bin:$PATH\")",
+      "Bash(ls /Users/adi/Desktop/Coding/Business/ikigai-finder/.env*)",
+      "Bash(sed -i '' 's|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1seHl0cmNjYmZvZ2d6Z2ZpaXp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwOTIyNjIsImV4cCI6MjA3MDY2ODI2Mn0.jCFgdsb-tsrqWLtbc0iBOSEf8lvgYwWRwQ0UJpRk7RM|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXpxZHRoaWl6c2tobXhpaHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDA5OTAsImV4cCI6MjA5MTQxNjk5MH0.nD-oKkvqckgQEcs1qzU_kVoOytrvFJF6OZctzPGeebQ|g' /Users/adi/Desktop/Coding/Business/ikigai-finder/__TRACKED_VAR__)",
+      "Bash(sed -i '' 's|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1seHl0cmNjYmZvZ2d6Z2ZpaXp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTA5MjI2MiwiZXhwIjoyMDcwNjY4MjYyfQ.YT1gSWzCCceFx7tQfciFTv8SZ1m_kaBvhBQGnld0UCE|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qdXpxZHRoaWl6c2tobXhpaHB3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg0MDk5MCwiZXhwIjoyMDkxNDE2OTkwfQ.r1eU7qt6cXgcdQrs6XARFpY46CgMa9JvggK9SUbsl-A|g' /Users/adi/Desktop/Coding/Business/ikigai-finder/__TRACKED_VAR__)",
+      "Bash(echo \"PID: $!\")",
+      "Read(//private/tmp/**)",
+      "Bash(curl -m 5 -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(npx next:*)",
+      "Bash(node_modules/.bin/next dev:*)",
+      "Bash(curl -s -o /dev/null -w \"HTTP: %{http_code}\" http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"HTTP: %{http_code}\\\\n\" http://localhost:3000)",
+      "Bash(node_modules/.bin/next build:*)",
+      "Bash(xxd /Users/adi/Desktop/Coding/Business/ikigai-finder/tailwind.config.ts)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3 /dev/stdin)",
+      "Bash(python3 -c \"import sys; data=open\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/package.json','rb'\\).read\\(\\); sys.stdout.buffer.write\\(data[:1000]\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d=fs.readFileSync\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/package.json','utf8'\\); process.stdout.write\\(d.slice\\(0,2000\\)\\);\")",
+      "Bash(node -e \"try{JSON.parse\\(require\\('fs'\\).readFileSync\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/package.json','utf8'\\)\\); console.log\\('VALID'\\);}catch\\(e\\){console.log\\('INVALID:'+e.message\\);}\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(node -e ':*)",
+      "Bash(xargs '-I{}' sh -c 'size=$\\(wc -c < \"{}\"\\); echo \"$size {}\"')",
+      "Bash(xargs '-I{}' sh -c 'size=$\\(wc -c < \"{}\"\\); if [ \"$size\" -eq 0 ]; then echo \"EMPTY: {}\"; fi')",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/package.json','utf8'\\)\\); console.log\\('package.json valid'\\);\")",
+      "Bash(curl -s -o /dev/null -w \"server HTTP: %{http_code}\\\\n\" http://localhost:3002)",
+      "Bash(curl -s -o /dev/null -w \"HTTP: %{http_code}\\\\n\" http://localhost:3002)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP: %{http_code}\\\\n\" http://localhost:3003)",
+      "Bash(node -e \"console.log\\(require\\('fs'\\).readFileSync\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/postcss.config.mjs','utf8'\\)\\)\")",
+      "Bash(node -e \"require\\('fs'\\).writeFileSync\\('/Users/adi/Desktop/Coding/Business/ikigai-finder/postcss.config.mjs', 'const config = {\\\\n  plugins: {\\\\n    tailwindcss: {},\\\\n    autoprefixer: {},\\\\n  },\\\\n};\\\\n\\\\nexport default config;\\\\n'\\)\")"
+    ]
+  }
+}
